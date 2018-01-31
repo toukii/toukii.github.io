@@ -1,0 +1,6 @@
+{{range .}}
+	{{.ModuleName}}
+	{{.TableList}}
+
+
+{{end}}
