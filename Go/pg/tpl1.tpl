@@ -1,6 +1,0 @@
-{{range .}}
-	{{.ModuleName}}
-	{{.TableList}}
-
-
-{{end}}
