@@ -23,7 +23,10 @@ go get -u golang.org/x/vgo
 
  - 2. config github.com token
 
- https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
+ [https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/)
+
+__~/.netrc__
+
 
 ```
 machine api.github.com login toukii password xxxx
