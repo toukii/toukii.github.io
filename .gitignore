@@ -1,4 +1,5 @@
 /Go/go/*
 /MDFs/*
 /Go/env/*
+/Go/note.*
 ignore/*
