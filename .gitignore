@@ -3,3 +3,6 @@
 /Go/env/*
 /Go/note.*
 ignore/*
+*.thm
+/blog/*
+/tags/*

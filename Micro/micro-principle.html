@@ -1,0 +1,124 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<title>toukii.github.io</title>
+<meta property="og:title" content="blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TOUKII GITHUB" />
+<meta property="og:description" content="TOUKII GITHUB" />
+<link rel="canonical" href="http://toukii.github.io/Go/base2.html" />
+<meta property="og:url" content="http://toukii.github.io/Go/base2.html" />
+<meta property="og:site_name" content="toukii.github.io" />
+<script type="application/ld+json">
+{"name":null,"description":"TOUKII GITHUB","author":null,"@type":"WebPage","url":"http://toukii.github.io/Go/base2.html","image":null,"publisher":null,"headline":"诡异:区别于其他语言","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/content.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/code.css">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+        <h1><a href="http://toukii.github.io/">toukii.github.io</a></h1>
+      
+
+<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/code/code.css?v=0.4">
+	<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/github/github-markdown.css?v=0.1">
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/static/js/jquery-1.10.2.min.js"></script>
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/code/code.js?v=0.1"></script>
+<h1><a name="micro" class="anchor" href="#micro" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>micro</h1>
+
+<p>微服务是去中心化的分布式软件架构。
+微服务的服务隔离应符合SRP。先回顾下软件设计的5大原理：</p>
+<h2><a name="微服务设计5大原理" class="anchor" href="#%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%AE%BE%E8%AE%A15%E5%A4%A7%E5%8E%9F%E7%90%86" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+<a href="https://zhuanlan.zhihu.com/p/24246822" rel="nofollow">微服务设计5大原理</a></h2>
+
+<p><a href="https://zhuanlan.zhihu.com/p/24246822" rel="nofollow">https://zhuanlan.zhihu.com/p/24246822</a></p>
+
+<p><a href="https://blog.csdn.net/beijingquanqiu2008/article/details/6032386" rel="nofollow">https://blog.csdn.net/beijingquanqiu2008/article/details/6032386</a></p>
+<h3><a name="srp-simple-responsibility-principle" class="anchor" href="#srp-simple-responsibility-principle" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+SRP : simple responsibility principle</h3>
+
+<p>单一职责原则</p>
+
+<p>如何划分呢，参考领域模型</p>
+<h3><a name="ocp-open-close-principle" class="anchor" href="#ocp-open-close-principle" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+OCP: open close principle</h3>
+
+<p>开闭原则</p>
+
+<p>对修改关闭，对扩展开发。
+说的是接口设计原则，依赖语言的封闭性，抽象与多态。</p>
+<h3><a name="lsp-l-subsituation-principle" class="anchor" href="#lsp-l-subsituation-principle" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+LSP L Subsituation principle</h3>
+
+<p>L.替换原则</p>
+
+<p>也可以称之为 抽象与多态的衡量标准，是否可以用子类替换超类。
+宽进严出</p>
+<h3><a name="dip-dependence-inversion-principle" class="anchor" href="#dip-dependence-inversion-principle" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+DIP dependence inversion principle</h3>
+
+<p>依赖导致原则</p>
+
+<p>依赖抽象接口，不依赖具体细节。对接口编程，不对实现编程。</p>
+<h3><a name="isp-interface-segregation-principle" class="anchor" href="#isp-interface-segregation-principle" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+ISP interface segregation principle</h3>
+
+<p>接口隔离原则</p>
+
+<p>实现接口应只实现需要的功能，这要求设计最小粒度接口。实现高内聚，低耦合。</p>
+<h2><a name="服务扩展轴-三个方向-https-upload-images-jianshu-io-upload-images-44770-031a3d323c9edbc9-png" class="anchor" href="#%E6%9C%8D%E5%8A%A1%E6%89%A9%E5%B1%95%E8%BD%B4-%E4%B8%89%E4%B8%AA%E6%96%B9%E5%90%91-https-upload-images-jianshu-io-upload-images-44770-031a3d323c9edbc9-png" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+服务扩展轴 ：三个方向 <a href="https://upload-images.jianshu.io/upload_images/44770-031a3d323c9edbc9.png" rel="nofollow">https://upload-images.jianshu.io/upload_images/44770-031a3d323c9edbc9.png</a></h2>
+
+<p>x: 服务器水平扩展
+z: 数据扩展
+y: 服务扩展</p>
+<h2><a name="微服务设计的优缺点" class="anchor" href="#%E5%BE%AE%E6%9C%8D%E5%8A%A1%E8%AE%BE%E8%AE%A1%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+微服务设计的优缺点</h2>
+
+<p>优点：
+服务内聚，功能类似，维护容易；
+单独部署、局部升级、分开扩展
+不同的技术栈</p>
+
+<p>缺点：
+分布式系统的弊病</p>
+<h2><a name="通信机制" class="anchor" href="#%E9%80%9A%E4%BF%A1%E6%9C%BA%E5%88%B6" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+通信机制</h2>
+
+<p>服务发现，api网关</p>
+
+<p>服务端架构和大数据架构有什么区别？
+所谓的“大数据”其实是海量数据采集清洗转换、数据存储、数据分析、数据服务等场景解决方案的一个统称，在每一个场景都包含了多种可选的技术，如数据采集有Flume、Sqoop、Kettle等，数据存储有分布式文件系统HDFS、FastDFS，NoSQL数据库HBase、MongoDB等，数据分析有Spark技术栈、机器学习算法等。总的来说大数据架构就是根据业务的需求，整合各种大数据组件组合而成的架构，一般会提供分布式存储、分布式计算、多维分析、数据仓库、机器学习算法等能力。而服务端架构更多指的是应用组织层面的架构，底层能力往往是由大数据架构来提供。</p>
+<h2><a name="架构设计原则" class="anchor" href="#%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+架构设计原则</h2>
+
+<p>N+1设计。系统中的每个组件都应做到没有单点故障；
+回滚设计。确保系统可以向前兼容，在系统升级时应能有办法回滚版本；
+禁用设计。应该提供控制具体功能是否可用的配置，在系统出现故障时能够快速下线功能；
+监控设计。在设计阶段就要考虑监控的手段；
+多活数据中心设计。若系统需要极高的高可用，应考虑在多地实施数据中心进行多活，至少在一个机房断电的情况下系统依然可用；
+采用成熟的技术。刚开发的或开源的技术往往存在很多隐藏的bug，出了问题没有商业支持可能会是一个灾难；
+资源隔离设计。应避免单一业务占用全部资源；
+架构应能水平扩展。系统只有做到能水平扩展，才能有效避免瓶颈问题；
+非核心则购买。非核心功能若需要占用大量的研发资源才能解决，则考虑购买成熟的产品；
+使用商用硬件。商用硬件能有效降低硬件故障的机率；
+快速迭代。系统应该快速开发小功能模块，尽快上线进行验证，早日发现问题大大降低系统交付的风险；
+无状态设计。服务接口应该做成无状态的，当前接口的访问不依赖于接口上次访问的状态。</p>
+
+
+
+      
+    </div>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn@v0.02/js/toukii/jquery-1.10.2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn/js/code.js"></script>
+    
+  </body>
+</html>
+

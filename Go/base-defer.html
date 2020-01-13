@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<title>toukii.github.io</title>
+<meta property="og:title" content="blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TOUKII GITHUB" />
+<meta property="og:description" content="TOUKII GITHUB" />
+<link rel="canonical" href="http://toukii.github.io/Go/base2.html" />
+<meta property="og:url" content="http://toukii.github.io/Go/base2.html" />
+<meta property="og:site_name" content="toukii.github.io" />
+<script type="application/ld+json">
+{"name":null,"description":"TOUKII GITHUB","author":null,"@type":"WebPage","url":"http://toukii.github.io/Go/base2.html","image":null,"publisher":null,"headline":"诡异:区别于其他语言","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/content.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/code.css">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+        <h1><a href="http://toukii.github.io/">toukii.github.io</a></h1>
+      
+
+<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/code/code.css?v=0.4">
+	<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/github/github-markdown.css?v=0.1">
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/static/js/jquery-1.10.2.min.js"></script>
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/code/code.js?v=0.1"></script>
+<h1><a name="go内置函数" class="anchor" href="#go%E5%86%85%E7%BD%AE%E5%87%BD%E6%95%B0" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>go内置函数</h1>
+<h2><a name="recover" class="anchor" href="#recover" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+recover</h2>
+
+<p>recover与defer配合使用，而且！！！recover只能在defer的func(匿名或非匿名)里调用才有效。有且只能包装一次！</p>
+
+<pre><code>/*
+	recover 只能包装在defer func（匿名或非匿名）中，只能包装一层。
+*/
+
+func TestRecover(t *testing.T) {
+	resp, err := PerfectResp()
+	t.Logf(&#34;resp:%+v, err:%+v&#34;, resp, err)
+}
+
+type Resp struct {
+	Code string
+	Msg  string
+}
+
+// resp:&amp;{Code:success! Msg:}, err:something going wrong
+func PerfectResp() (resp *Resp, err error) {
+	defer func() {
+		if cerr := recover(); cerr != nil {
+			fmt.Printf(&#34;recover err:%+v\n&#34;, cerr)
+			err = fmt.Errorf(&#34;something going wrong&#34;)
+		}
+	}()
+
+	resp = &amp;Resp{
+		Code: &#34;success!&#34;,
+	}
+
+	panic(&#34;go wrong!&#34;)
+}
+
+</code></pre>
+<h2><a name="defer" class="anchor" href="#defer" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+<a href="https://mp.weixin.qq.com/s/t5tmqsjZ4y4Z_n6u4c9bMw" rel="nofollow">defer</a></h2>
+
+<ol>
+<li>defer 先装载好其func的参数，最后在func执行之前返回到主程。此过程为串行调用。</li>
+</ol>
+
+<pre><code>func main(){
+	mainfunc()
+}
+
+func mywarpfunc(i int) func() {
+	fmt.Println(&#34;mywarpfunc begine&#34;, i)
+	return func() {
+		i++
+		fmt.Println(&#34;mywarpfunc 具体实现&#34;, i)
+	}
+}
+
+/*
+mywarpfunc begine 1
+mainfunc 1
+mywarpfunc 具体实现 2
+*/
+func mainfunc() {
+	i := 1
+	defer mywarpfunc(i)()
+	fmt.Println(&#34;mainfunc&#34;, i)
+}
+</code></pre>
+
+<ol>
+<li>defer func 局部变量未包含的变量，将会在上下文中查找。</li>
+<li>注意返回值的匿名或非匿名</li>
+</ol>
+
+<pre><code>	ret = deferFuncWithNamedReturnValue()
+	fmt.Println(&#34;deferFuncWithNamedReturnValue ret: &#34;, ret)
+	ret = deferFuncWithNamedReturnValue2()
+	fmt.Println(&#34;deferFuncWithNamedReturnValue2 ret: &#34;, ret)
+
+/*
+retVal: 0
+retVal: 1
+deferFuncWithNamedReturnValue ret:  2
+*/
+func deferFuncWithNamedReturnValue() (retVal int) {
+	r := 2
+	defer func(retVal int) {
+		fmt.Println(&#34;retVal:&#34;, retVal)
+		retVal++
+		fmt.Println(&#34;retVal:&#34;, retVal)
+	}(retVal)
+	return r
+}
+
+/*
+retVal: 2
+retVal: 3
+deferFuncWithNamedReturnValue2 ret:  3
+*/
+func deferFuncWithNamedReturnValue2() (retVal int) {
+	r := 2
+	defer func() {
+		fmt.Println(&#34;retVal:&#34;, retVal)
+		retVal++
+		fmt.Println(&#34;retVal:&#34;, retVal)
+	}()
+	return r
+}
+
+</code></pre>
+
+<p>简而言之,延迟函数在声明时会收集相关参数赋值拷贝一份入栈,时机合适时再从入栈环境中寻找相关环境参数,如果找不到就扩大范围寻找外层函数是否包含所需变量,执行过程也就是延迟函数的出栈.</p>
+
+<pre><code>func test1() (x int) {
+    defer fmt.Printf(&#34;in defer: x = %d\n&#34;, x)
+    x = 7
+    return 9
+}
+
+func test2() (x int) {
+    x = 7
+    defer fmt.Printf(&#34;in defer: x = %d\n&#34;, x)
+    return 9
+}
+
+func test3() (x int) {
+    defer func() {
+        fmt.Printf(&#34;in defer: x = %d\n&#34;, x)
+    }()
+
+    x = 7
+    return 9
+}
+
+func test4() (x int) {
+    defer func(n int) {
+        fmt.Printf(&#34;in defer x as parameter: x = %d\n&#34;, n)
+        fmt.Printf(&#34;in defer x after return: x = %d\n&#34;, x)
+    }(x)
+
+    x = 7
+    return 9
+}
+
+func main() {
+    fmt.Println(&#34;test1&#34;)
+    fmt.Printf(&#34;in main: x = %d\n&#34;, test1())
+    fmt.Println(&#34;test2&#34;)
+    fmt.Printf(&#34;in main: x = %d\n&#34;, test2())
+    fmt.Println(&#34;test3&#34;)
+    fmt.Printf(&#34;in main: x = %d\n&#34;, test3())
+    fmt.Println(&#34;test4&#34;)
+    fmt.Printf(&#34;in main: x = %d\n&#34;, test4())
+}
+</code></pre>
+
+<p>公布答案：</p>
+
+<pre><code>test1
+in defer: x = 0
+in main: x = 9
+test2
+in defer: x = 7
+in main: x = 9
+test3
+in defer: x = 9
+in main: x = 9
+test4
+in defer x as parameter: x = 0
+in defer x after return: x = 9
+in main: x = 9
+</code></pre>
+
+<pre><code>https://blog.learngoprogramming.com/gotchas-of-defer-in-go-1-8d070894cb01
+
+type database struct{}
+func (db *database) connect() (disconnect func()) {
+  fmt.Println(&#34;connect&#34;)
+  return func() {
+    fmt.Println(&#34;disconnect&#34;)
+  }
+}
+
+func() {
+  db := &amp;database{} // 如果defer设计私有变量传递，需要用指针
+  close := db.connect()
+  defer close()
+ 
+  fmt.Println(&#34;query db...&#34;)
+}
+</code></pre>
+
+
+
+      
+    </div>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn@v0.02/js/toukii/jquery-1.10.2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn/js/code.js"></script>
+    
+  </body>
+</html>
+
+fore/cdn/js/code.js"></script>
+    
+  </body>
+</html>
+

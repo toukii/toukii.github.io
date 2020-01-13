@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<title>toukii.github.io</title>
+<meta property="og:title" content="blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TOUKII GITHUB" />
+<meta property="og:description" content="TOUKII GITHUB" />
+<link rel="canonical" href="http://toukii.github.io/Go/base2.html" />
+<meta property="og:url" content="http://toukii.github.io/Go/base2.html" />
+<meta property="og:site_name" content="toukii.github.io" />
+<script type="application/ld+json">
+{"name":null,"description":"TOUKII GITHUB","author":null,"@type":"WebPage","url":"http://toukii.github.io/Go/base2.html","image":null,"publisher":null,"headline":"诡异:区别于其他语言","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/content.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/code.css">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+        <h1><a href="http://toukii.github.io/">toukii.github.io</a></h1>
+      
+
+<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/code/code.css?v=0.4">
+	<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/github/github-markdown.css?v=0.1">
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/static/js/jquery-1.10.2.min.js"></script>
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/code/code.js?v=0.1"></script>
+<h1><a name="protobuf原理-转载" class="anchor" href="#protobuf%E5%8E%9F%E7%90%86-%E8%BD%AC%E8%BD%BD" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>protobuf原理 <a href="https://blog.csdn.net/carson_ho/article/details/70568606" rel="nofollow">转载</a></h1>
+<h2><a name="t-l-v-的数据存储方式" class="anchor" href="#t-l-v-%E7%9A%84%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+T - L - V 的数据存储方式</h2>
+
+<p>即 Tag - Length - Value，标识 - 长度 - 字段值 存储方式， 其中 Length可选存储，如 储存Varint编码数据就不需要存储Length。</p>
+<h3><a name="tlv存储的优点" class="anchor" href="#tlv%E5%AD%98%E5%82%A8%E7%9A%84%E4%BC%98%E7%82%B9" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+TLV存储的优点</h3>
+
+<p>不需要分隔符 就能 分隔开字段，减少了 分隔符 的使用
+各字段 存储得非常紧凑，存储空间利用率非常高
+若 字段没有被设置字段值，那么该字段在序列化时的数据中是完全不存在的，即不需要编码。</p>
+<h2><a name="结论1-protocol-buffer将-消息里的每个字段-进行编码后-再利用t-l-v-存储方式-进行数据的存储-最终得到的是一个-二进制字节流" class="anchor" href="#%E7%BB%93%E8%AE%BA1-protocol-buffer%E5%B0%86-%E6%B6%88%E6%81%AF%E9%87%8C%E7%9A%84%E6%AF%8F%E4%B8%AA%E5%AD%97%E6%AE%B5-%E8%BF%9B%E8%A1%8C%E7%BC%96%E7%A0%81%E5%90%8E-%E5%86%8D%E5%88%A9%E7%94%A8t-l-v-%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F-%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E7%9A%84%E5%AD%98%E5%82%A8-%E6%9C%80%E7%BB%88%E5%BE%97%E5%88%B0%E7%9A%84%E6%98%AF%E4%B8%80%E4%B8%AA-%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%AD%97%E8%8A%82%E6%B5%81" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+结论1： Protocol Buffer将 消息里的每个字段 进行编码后，再利用T - L - V 存储方式 进行数据的存储，最终得到的是一个 二进制字节流</h2>
+
+<p>protobuf编解码时，存储方式 Tag-Value-Tag-Value-...，Length（Varint编码无L）。</p>
+
+<p>Tag：经过 Protocol Buffer采用Varint &amp; Zigzag编码后 的消息字段 标识号 &amp; 数据类型 的值, 用于标识字段。</p>
+
+<pre><code>存储了字段的标识号（field_number）和 数据类型（wire_type），即Tag = 字段数据类型（wire_type） + 标识号（field_number）
+占用 一个字节 的长度（如果标识号超过了16，则占用多一个字节的位置）
+解包时，Protocol Buffer根据 Tag 将 Value 对应于消息中的 字段。
+</code></pre>
+
+<p>Value: 经过 Protocol Buffer采用Varint &amp; Zigzag编码后 的消息字段的值。</p>
+
+<p><strong>由于其编码的特性，要求调用方参数的数据类型和标识号与服务端保持一致，若类型不一致，无法解码。</strong></p>
+<h2><a name="结论2-protocol-buffer对于不同数据类型-采用不同的-序列化方式-编码方式-数据存储方式" class="anchor" href="#%E7%BB%93%E8%AE%BA2-protocol-buffer%E5%AF%B9%E4%BA%8E%E4%B8%8D%E5%90%8C%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-%E9%87%87%E7%94%A8%E4%B8%8D%E5%90%8C%E7%9A%84-%E5%BA%8F%E5%88%97%E5%8C%96%E6%96%B9%E5%BC%8F-%E7%BC%96%E7%A0%81%E6%96%B9%E5%BC%8F-%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+结论2：Protocol Buffer对于不同数据类型 采用不同的 序列化方式（编码方式 &amp; 数据存储方式）</h2>
+
+<pre><code>对于存储Varint编码数据，就不需要存储字节长度 Length，所以实际上Protocol Buffer的存储方式是 T - V；
+若Protocol Buffer采用其他编码方式（如LENGTH_DELIMITED）则采用T - L - V
+</code></pre>
+<h2><a name="结论3-因为-protocol-buffer对于数据字段值的-独特编码方式-t-l-v数据存储方式-使得-protocol-buffer序列化后数据量体积如此小" class="anchor" href="#%E7%BB%93%E8%AE%BA3-%E5%9B%A0%E4%B8%BA-protocol-buffer%E5%AF%B9%E4%BA%8E%E6%95%B0%E6%8D%AE%E5%AD%97%E6%AE%B5%E5%80%BC%E7%9A%84-%E7%8B%AC%E7%89%B9%E7%BC%96%E7%A0%81%E6%96%B9%E5%BC%8F-t-l-v%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F-%E4%BD%BF%E5%BE%97-protocol-buffer%E5%BA%8F%E5%88%97%E5%8C%96%E5%90%8E%E6%95%B0%E6%8D%AE%E9%87%8F%E4%BD%93%E7%A7%AF%E5%A6%82%E6%AD%A4%E5%B0%8F" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+结论3：因为 Protocol Buffer对于数据字段值的 独特编码方式 &amp; T - L - V数据存储方式，使得 Protocol Buffer序列化后数据量体积如此小</h2>
+<h2><a name="使用建议" class="anchor" href="#%E4%BD%BF%E7%94%A8%E5%BB%BA%E8%AE%AE" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+使用建议</h2>
+<h3><a name="建议1-多用-optional或-repeated修饰符" class="anchor" href="#%E5%BB%BA%E8%AE%AE1-%E5%A4%9A%E7%94%A8-optional%E6%88%96-repeated%E4%BF%AE%E9%A5%B0%E7%AC%A6" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+建议1：多用 optional或 repeated修饰符</h3>
+
+<p>因为若optional 或 repeated 字段没有被设置字段值，那么该字段在序列化时的数据中是完全不存在的，即不需要进行编码
+相应的字段在解码时才会被设置为默认值</p>
+<h3><a name="建议2-字段标识号-field-number-尽量只使用-1-15-且不要跳动使用" class="anchor" href="#%E5%BB%BA%E8%AE%AE2-%E5%AD%97%E6%AE%B5%E6%A0%87%E8%AF%86%E5%8F%B7-field-number-%E5%B0%BD%E9%87%8F%E5%8F%AA%E4%BD%BF%E7%94%A8-1-15-%E4%B8%94%E4%B8%8D%E8%A6%81%E8%B7%B3%E5%8A%A8%E4%BD%BF%E7%94%A8" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+建议2：字段标识号（Field_Number）尽量只使用 1-15，且不要跳动使用</h3>
+
+<p>因为Tag里的Field_Number是需要占字节空间的。如果Field_Number&gt;16时，Field_Number的编码就会占用2个字节，那么Tag在编码时也就会占用更多的字节；如果将字段标识号定义为连续递增的数值，将获得更好的编码和解码性能</p>
+<h3><a name="建议3-若需要使用的字段值出现负数-请使用-sint32-sint64-不要使用int32-int64" class="anchor" href="#%E5%BB%BA%E8%AE%AE3-%E8%8B%A5%E9%9C%80%E8%A6%81%E4%BD%BF%E7%94%A8%E7%9A%84%E5%AD%97%E6%AE%B5%E5%80%BC%E5%87%BA%E7%8E%B0%E8%B4%9F%E6%95%B0-%E8%AF%B7%E4%BD%BF%E7%94%A8-sint32-sint64-%E4%B8%8D%E8%A6%81%E4%BD%BF%E7%94%A8int32-int64" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+建议3：若需要使用的字段值出现负数，请使用 sint32 / sint64，不要使用int32 / int64</h3>
+
+<p>因为采用sint32 / sint64数据类型表示负数时，会先采用Zigzag编码再采用Varint编码，从而更加有效压缩数据</p>
+<h3><a name="建议4-对于repeated字段-尽量增加packed-true修饰" class="anchor" href="#%E5%BB%BA%E8%AE%AE4-%E5%AF%B9%E4%BA%8Erepeated%E5%AD%97%E6%AE%B5-%E5%B0%BD%E9%87%8F%E5%A2%9E%E5%8A%A0packed-true%E4%BF%AE%E9%A5%B0" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+建议4：对于repeated字段，尽量增加packed=true修饰</h3>
+
+<p>因为加了packed=true修饰repeated字段采用连续数据存储方式，即T - L - V - V -V方式</p>
+
+
+
+      
+    </div>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn@v0.02/js/toukii/jquery-1.10.2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn/js/code.js"></script>
+    
+  </body>
+</html>
+

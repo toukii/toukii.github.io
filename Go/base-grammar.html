@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<title>toukii.github.io</title>
+<meta property="og:title" content="blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TOUKII GITHUB" />
+<meta property="og:description" content="TOUKII GITHUB" />
+<link rel="canonical" href="http://toukii.github.io/Go/base2.html" />
+<meta property="og:url" content="http://toukii.github.io/Go/base2.html" />
+<meta property="og:site_name" content="toukii.github.io" />
+<script type="application/ld+json">
+{"name":null,"description":"TOUKII GITHUB","author":null,"@type":"WebPage","url":"http://toukii.github.io/Go/base2.html","image":null,"publisher":null,"headline":"诡异:区别于其他语言","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/content.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/code.css">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+        <h1><a href="http://toukii.github.io/">toukii.github.io</a></h1>
+      
+
+<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/code/code.css?v=0.4">
+	<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/github/github-markdown.css?v=0.1">
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/static/js/jquery-1.10.2.min.js"></script>
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/code/code.js?v=0.1"></script>
+<h1><a name="基础语法" class="anchor" href="#%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>基础语法</h1>
+<h2><a name="1-关键字-keyword" class="anchor" href="#1-%E5%85%B3%E9%94%AE%E5%AD%97-keyword" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+1. 关键字 keyword</h2>
+
+<pre><code>if else switch case default fallthrough
+for range
+new make len cap append delete copy close panic recover
+go select defer
+return goto break continue
+complex imag real
+map chan func interface
+package import var const type struct
+print println
+</code></pre>
+<h4><a name="fallthrough" class="anchor" href="#fallthrough" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+fallthrough</h4>
+
+<p>case 满足条件时，强制进入下一个case；</p>
+<h4><a name="for-range" class="anchor" href="#for-range" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+for range</h4>
+
+<p>可遍历的类型有：slice(i,t)，array(i,t)，map(k,v)，string(i,rune)，chan(i,t)</p>
+<h4><a name="new" class="anchor" href="#new" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+new</h4>
+
+<p>返回指针</p>
+<h4><a name="make" class="anchor" href="#make" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+make</h4>
+
+<p>申请内存，slice(len,cap)，map(cap)，chan(cap)</p>
+
+<p>make 语法：</p>
+
+<pre><code>s := make([]T,s_len,s_cap)
+len(s) = s_len
+cap(s) = s_cap
+
+m := make(map[T1]T2,m_cap)
+len(m) &lt;&gt; m_cap
+// cap(m) is wrong.
+
+c := make(chan T,c_cap)
+len(c) &lt;&gt; c_cap
+cap(c) = c_cap
+</code></pre>
+
+<pre><code>m := make(map[string]bool, 10)
+m[&#34;map-key1&#34;] = true
+fmt.Println(len(m)) // 1
+
+c := make(chan bool, 9)
+c &lt;- false
+c &lt;- true
+fmt.Println(len(c), cap(c)) // 2 9
+</code></pre>
+<h4><a name="append" class="anchor" href="#append" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+append</h4>
+
+<p>往slice里续写，若<code>cap(slice)&gt;len(slice)</code>, <code>len(slice)</code>会+1;
+否则，会扩容：cap<code>增加(2倍，但不是无限2倍扩容)</code>，len(slice)增加1</p>
+
+<p><a href="http://sharecore.net/2014/01/09/%E5%AF%B9Go%E7%9A%84Slice%E8%BF%9B%E8%A1%8CAppend%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/" rel="nofollow">延伸阅读</a></p>
+<h4><a name="delete" class="anchor" href="#delete" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+delete</h4>
+
+<p>删除map里的某个值</p>
+<h2><a name="2-类型" class="anchor" href="#2-%E7%B1%BB%E5%9E%8B" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+2. 类型</h2>
+
+<ul>
+<li><p>1 基本类型</p>
+
+<pre><code>bool
+byte int8
+complex(64|128) real imga
+error
+float(32|64)
+rune
+string
+u?int(8|16|32|64)?
+int int32
+uintptr
+</code></pre></li>
+
+<li><p>2 其他类型</p></li>
+</ul>
+
+<pre><code>struct
+map
+slice|array
+interface
+func
+</code></pre>
+<h2><a name="3-声明-初始化" class="anchor" href="#3-%E5%A3%B0%E6%98%8E-%E5%88%9D%E5%A7%8B%E5%8C%96" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+3. 声明&amp;初始化</h2>
+
+<pre><code>var i int
+j := 1
+</code></pre>
+
+<p><a href="base2.html" rel="nofollow">诡异:区别于其他语言</a></p>
+
+
+
+      
+    </div>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn@v0.02/js/toukii/jquery-1.10.2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn/js/code.js"></script>
+    
+  </body>
+</html>
+

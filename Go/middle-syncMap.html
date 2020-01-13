@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<title>toukii.github.io</title>
+<meta property="og:title" content="blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TOUKII GITHUB" />
+<meta property="og:description" content="TOUKII GITHUB" />
+<link rel="canonical" href="http://toukii.github.io/Go/base2.html" />
+<meta property="og:url" content="http://toukii.github.io/Go/base2.html" />
+<meta property="og:site_name" content="toukii.github.io" />
+<script type="application/ld+json">
+{"name":null,"description":"TOUKII GITHUB","author":null,"@type":"WebPage","url":"http://toukii.github.io/Go/base2.html","image":null,"publisher":null,"headline":"诡异:区别于其他语言","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/content.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/code.css">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+        <h1><a href="http://toukii.github.io/">toukii.github.io</a></h1>
+      
+
+<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/code/code.css?v=0.4">
+	<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/github/github-markdown.css?v=0.1">
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/static/js/jquery-1.10.2.min.js"></script>
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/code/code.js?v=0.1"></script>
+<h2><a name="sync-map-源码解析-转载" class="anchor" href="#sync-map-%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90-%E8%BD%AC%E8%BD%BD" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>sync.Map 源码解析 <a href="https://colobu.com/2017/07/11/dive-into-sync-Map/" rel="nofollow">转载</a></h2>
+
+<p>sync.Map提供了如下方法：</p>
+
+<pre><code>type Map
+    func (m *Map) Delete(key interface{}) 删除
+    func (m *Map) Load(key interface{}) (value interface{}, ok bool) 查询
+    func (m *Map) LoadOrStore(key, value interface{}) (actual interface{}, loaded bool) setNx
+    func (m *Map) Range(f func(key, value interface{}) bool) 遍历
+    func (m *Map) Store(key, value interface{}) 更新
+</code></pre>
+
+<p>实现原理是在其底层有两份存在冗余的数据存储：<code>dirty</code>、<code>read</code>; 其中，对read只读，不需要加锁，在更新kv时会操作dirty，加锁。</p>
+
+<p>Load：一般地，读取数据都可以从read中读到，若read中没有读到，查找非空dirty，则miss+1；当miss&gt;len(dirty)时，需要将dirty转为read，dirty置空。
+加锁查找dirty时，用到了著名的双检查（java单例模式常用方法）。</p>
+
+
+
+      
+    </div>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn@v0.02/js/toukii/jquery-1.10.2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn/js/code.js"></script>
+    
+  </body>
+</html>
+
