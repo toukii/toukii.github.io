@@ -1,0 +1,120 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<title>toukii.github.io</title>
+<meta property="og:title" content="blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TOUKII GITHUB" />
+<meta property="og:description" content="TOUKII GITHUB" />
+<link rel="canonical" href="http://toukii.github.io/Go/base2.html" />
+<meta property="og:url" content="http://toukii.github.io/Go/base2.html" />
+<meta property="og:site_name" content="toukii.github.io" />
+<script type="application/ld+json">
+{"name":null,"description":"TOUKII GITHUB","author":null,"@type":"WebPage","url":"http://toukii.github.io/Go/base2.html","image":null,"publisher":null,"headline":"诡异:区别于其他语言","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/content.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/code.css">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+        <h1><a href="http://toukii.github.io/">toukii.github.io</a></h1>
+      
+
+<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/code/code.css?v=0.4">
+	<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/github/github-markdown.css?v=0.1">
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/static/js/jquery-1.10.2.min.js"></script>
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/code/code.js?v=0.1"></script>
+<h1><a name="性能优化" class="anchor" href="#%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>性能优化</h1>
+<h2><a name="性能优化方法论-转载" class="anchor" href="#%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%B3%95%E8%AE%BA-%E8%BD%AC%E8%BD%BD" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+性能优化方法论 <a href="https://mp.weixin.qq.com/s/snQ3T86usv4rXz0MMQvFfQ" rel="nofollow">转载</a></h2>
+
+<p>性能优化与解bug不同，对工程师的技术广度和技术深度有所要求。性能问题不仅包含代码问题，还包括容器、操作系统、网络、存储、文件系统等问题。</p>
+
+<ol>
+<li>了解应用的的总体架构，比如应用的外部依赖和核心接口有哪些，使用了哪些组件和框架，哪些接口、模块的使用率较高，上下游的数据链路是怎么样的等；</li>
+<li>了解应用对应的服务器信息，如服务器所在的集群信息、服务器的 CPU/内存信息、安装的 Linux 版本信息、服务器是容器还是虚拟机、所在宿主机混部后是否对当前应用有干扰等；</li>
+</ol>
+
+<p>性能优化的痛点：</p>
+
+<pre><code>无法确定性能瓶颈点
+性能优化的分析思路不明确
+如何选择性能优化的分析工具
+</code></pre>
+
+<p>性能优化流程</p>
+
+<p>准备阶段：主要工作是是通过性能测试，了解应用的概况、瓶颈的大概方向，明确优化目标；</p>
+
+<p>分析阶段：通过各种工具或手段，初步定位性能瓶颈点；</p>
+
+<p>调优阶段：根据定位到的瓶颈点，进行应用性能调优；</p>
+
+<p>测试阶段：让调优过的应用进行性能测试，与准备阶段的各项指标进行对比，观测其是否符合预期，如果瓶颈点没有消除或者性能指标不符合预期，则重复步骤2和3。</p>
+
+<p><strong>通过压测或系统日常监控确定优化目标，如数据库、内存等；通过采集系统指标确定性能瓶颈点；执行调优然后验证优化效果；重复执行优化，直到达到优化目标。</strong></p>
+
+<p>注意事项</p>
+
+<ol>
+<li>性能瓶颈点通常呈现 2/8 分布，即80%的性能问题通常是由20%的性能瓶颈点导致的，2/8 原则也意味着并不是所有的性能问题都值得去优化；</li>
+<li>性能优化是一个渐进、迭代的过程，需要逐步、动态地进行。记录基准后，每次改变一个变量，引入多个变量会给我们的观测、优化过程造成干扰；</li>
+<li>不要过度追求应用的单机性能，如果单机表现良好，则应该从系统架构的角度去思考; 不要过度追求单一维度上的极致优化，如过度追求 CPU 的性能而忽略了内存方面的瓶颈；</li>
+<li>选择合适的性能优化工具，可以使得性能优化取得事半功倍的效果；</li>
+<li>整个应用的优化，应该与线上系统隔离，新的代码上线应该有降级方案。</li>
+</ol>
+<h2><a name="go性能优化" class="anchor" href="#go%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+Go性能优化</h2>
+<h3><a name="http-pprof" class="anchor" href="#http-pprof" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+http/pprof</h3>
+
+<pre><code>import _ &#34;net/http/pprof&#34;
+
+http.ListenAndServe(&#34;localhost:8080&#34;, nil)
+</code></pre>
+<h3><a name="指标采集" class="anchor" href="#%E6%8C%87%E6%A0%87%E9%87%87%E9%9B%86" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+指标采集</h3>
+
+<ol>
+<li>go tool pprof
+<code>
+go tool pprof http://127.0.0.1:8080/debug/pprof/profile\?seconds\=30
+go tool pprof -alloc_space http://127.0.0.1:8080/debug/pprof/heap
+</code>
+日志里有有采集数据的保存路径
+Saved profile in /Users/xxx/pprof/pprof.xxx.samples.cpu.002.pb.gz
+<code>
+go-torch /Users/xxx/pprof/pprof.xxx.samples.cpu.002.pb.gz
+</code></li>
+<li>curl
+<code>
+curl http://127.0.0.1:8080/debug/pprof/profile &gt;&gt; app_cpu.profile
+curl http://localhost:8080/debug/pprof/heap &gt;&gt; app_heap.profile
+</code></li>
+<li>go-torch
+<code>
+go-torch -u http://127.0.0.1:8080 -p &gt; torch.svg
+</code></li>
+</ol>
+<h3><a name="火焰图工具-go-torch" class="anchor" href="#%E7%81%AB%E7%84%B0%E5%9B%BE%E5%B7%A5%E5%85%B7-go-torch" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+火焰图工具 go-torch</h3>
+
+<p>CPU的火焰图，需要优化的点是比较平摊的区域。</p>
+
+
+
+      
+    </div>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn@v0.02/js/toukii/jquery-1.10.2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn/js/code.js"></script>
+    
+  </body>
+</html>
+
