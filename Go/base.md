@@ -14,6 +14,8 @@
 
 [import](base-import.html)
 
+[locker](base-locker.html)
+
 ## 常见语法解析
 
 [值传递](base-value.html)

@@ -54,59 +54,131 @@ helloworld.Greeter.pbin文件内容：
 ```
 0ab1 020a 0d67 7265 6574 6572 2e70 726f
 746f 120a 6865 6c6c 6f77 6f72 6c64 2222
-0a0c 4865 6c6c 6f52 6571 7565 7374 1212
-0a04 6e61 6d65 1801 2001 2809 5204 6e61
-6d65 2226 0a0a 4865 6c6c 6f52 6570 6c79
-1218 0a07 6d65 7373 6167 6518 0120 0128
-0952 076d 6573 7361 6765 328d 010a 0747
-7265 6574 6572 123e 0a08 5361 7948 656c
-6c6f 1218 2e68 656c 6c6f 776f 726c 642e
-4865 6c6c 6f52 6571 7565 7374 1a16 2e68
-656c 6c6f 776f 726c 642e 4865 6c6c 6f52
-6570 6c79 2200 1242 0a0a 5361 7948 656c
-6c6f 5632 1218 2e68 656c 6c6f 776f 726c
-642e 4865 6c6c 6f52 6571 7565 7374 1a16
-2e68 656c 6c6f 776f 726c 642e 4865 6c6c
-6f52 6570 6c79 2200 3001 4230 0a1b 696f
-2e67 7270 632e 6578 616d 706c 6573 2e68
-656c 6c6f 776f 726c 6442 0f48 656c 6c6f
-576f 726c 6450 726f 746f 5001 6206 7072
-6f74 6f33 0ad1 040a 0a6c 616e 672e 7072
-6f74 6f12 0a68 656c 6c6f 776f 726c 6422
-370a 074c 6973 7452 6571 1216 0a06 6f66
-6673 6574 1801 2001 2805 5206 6f66 6673
-6574 1214 0a05 6c69 6d69 7418 0220 0128
-0552 056c 696d 6974 2267 0a04 4c61 6e67
-1212 0a04 6e61 6d65 1801 2001 2809 5204
-6e61 6d65 121a 0a08 6269 7274 6864 6179
-1802 2001 2803 5208 6269 7274 6864 6179
-122f 0a08 7665 7273 696f 6e73 1803 2003
-280b 3213 2e68 656c 6c6f 776f 726c 642e
-5665 7273 696f 6e52 0876 6572 7369 6f6e
-7322 9f01 0a07 5665 7273 696f 6e12 0e0a
-0269 6418 0120 0128 0552 0269 6412 180a
-0776 6572 7369 6f6e 1802 2001 2809 5207
-7665 7273 696f 6e12 120a 0464 6573 6318
-0320 0128 0952 0464 6573 6312 140a 0576
-6933 3273 1804 2003 2805 5205 7669 3332
-7312 140a 0576 7374 7273 1805 2003 2809
-5205 7673 7472 7312 140a 0576 6936 3473
-1806 2003 2803 5205 7669 3634 7312 140a
-0576 6636 3473 1807 2003 2801 5205 7666
-3634 7322 520a 084c 6973 7452 6573 7012
-260a 056c 616e 6773 1801 2003 280b 3210
-2e68 656c 6c6f 776f 726c 642e 4c61 6e67
-5205 6c61 6e67 7312 1e0a 0a74 6f74 616c
-436f 756e 7418 0220 0128 0552 0a74 6f74
-616c 436f 756e 7422 200a 0a47 6574 4c61
-6e67 5265 7112 120a 046e 616d 6518 0120
-0128 0952 046e 616d 6532 750a 0b4c 616e
-6753 6572 7669 6365 1231 0a04 4c69 7374
-1213 2e68 656c 6c6f 776f 726c 642e 4c69
-7374 5265 711a 142e 6865 6c6c 6f77 6f72
-6c64 2e4c 6973 7452 6573 7012 330a 0747
-6574 4c61 6e67 1216 2e68 656c 6c6f 776f
+
+....
+
 726c 642e 4765 744c 616e 6752 6571 1a10
 2e68 656c 6c6f 776f 726c 642e 4c61 6e67
 6206 7072 6f74 6f33 
 ```
+
+## Go获取proto描述
+
+```
+import "github.com/golang/protobuf/protoc-gen-go/descriptor"
+```
+
+```
+type FileDescriptorSet struct {
+	File                 []*FileDescriptorProto `protobuf:"bytes,1,rep,name=file" json:"file,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
+	XXX_unrecognized     []byte                 `json:"-"`
+	XXX_sizecache        int32                  `json:"-"`
+}
+
+// Describes a complete .proto file.
+type FileDescriptorProto struct {
+	Name    *string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	Package *string `protobuf:"bytes,2,opt,name=package" json:"package,omitempty"`
+	// Names of files imported by this file.
+	Dependency []string `protobuf:"bytes,3,rep,name=dependency" json:"dependency,omitempty"`
+	// Indexes of the public imported files in the dependency list above.
+	PublicDependency []int32 `protobuf:"varint,10,rep,name=public_dependency,json=publicDependency" json:"public_dependency,omitempty"`
+	// Indexes of the weak imported files in the dependency list.
+	// For Google-internal migration only. Do not use.
+	WeakDependency []int32 `protobuf:"varint,11,rep,name=weak_dependency,json=weakDependency" json:"weak_dependency,omitempty"`
+	// All top-level definitions in this file.
+	MessageType []*DescriptorProto        `protobuf:"bytes,4,rep,name=message_type,json=messageType" json:"message_type,omitempty"`
+	EnumType    []*EnumDescriptorProto    `protobuf:"bytes,5,rep,name=enum_type,json=enumType" json:"enum_type,omitempty"`
+	Service     []*ServiceDescriptorProto `protobuf:"bytes,6,rep,name=service" json:"service,omitempty"`
+	Extension   []*FieldDescriptorProto   `protobuf:"bytes,7,rep,name=extension" json:"extension,omitempty"`
+	Options     *FileOptions              `protobuf:"bytes,8,opt,name=options" json:"options,omitempty"`
+	// This field contains optional information about the original source code.
+	// You may safely remove this entire field without harming runtime
+	// functionality of the descriptors -- the information is needed only by
+	// development tools.
+	SourceCodeInfo *SourceCodeInfo `protobuf:"bytes,9,opt,name=source_code_info,json=sourceCodeInfo" json:"source_code_info,omitempty"`
+	// The syntax of the proto file.
+	// The supported values are "proto2" and "proto3".
+	Syntax               *string  `protobuf:"bytes,12,opt,name=syntax" json:"syntax,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+```
+
+descriptor.FileDescriptorSet 描述了一个FileDescriptorProto的集合，包含了它自身的定义和一些依赖定义。
+FileDescriptorProto 描述了单个FileDescProto的属性：名称、服务、定义等。
+
+获取descriptor.FileDescriptorSet：
+
+```
+data, err := ioutil.ReadFile("helloworld.Greeter.pbin")
+if err != nil {
+	return nil, err
+}
+fileDescriptorSet := &descriptor.FileDescriptorSet{}
+if err := proto.Unmarshal(data, fileDescriptorSet); err != nil {
+	return nil, err
+}
+```
+
+FileDescriptorProto检查：
+fileDescriptorProto: 包含当前调用服务的fileDescriptorProto， fileDescriptorSet: 依赖的fileDescriptorProto集合。
+
+```
+func SortFileDescriptorSet(fileDescriptorSet *descriptor.FileDescriptorSet, fileDescriptorProto *descriptor.FileDescriptorProto) (*descriptor.FileDescriptorSet, error) {
+	// best-effort checks
+	names := make(map[string]struct{}, len(fileDescriptorSet.File))
+	for _, iFileDescriptorProto := range fileDescriptorSet.File {
+		if iFileDescriptorProto.GetName() == "" {
+			return nil, fmt.Errorf("no name on FileDescriptorProto")
+		}
+		if _, ok := names[iFileDescriptorProto.GetName()]; ok {
+			return nil, fmt.Errorf("duplicate FileDescriptorProto in FileDescriptorSet: %s", iFileDescriptorProto.GetName())
+		}
+		names[iFileDescriptorProto.GetName()] = struct{}{}
+	}
+	if _, ok := names[fileDescriptorProto.GetName()]; !ok {
+		return nil, fmt.Errorf("no FileDescriptorProto named %s in FileDescriptorSet with names %v", fileDescriptorProto.GetName(), names)
+	}
+	newFileDescriptorSet := &descriptor.FileDescriptorSet{}
+	for _, iFileDescriptorProto := range fileDescriptorSet.File {
+		if iFileDescriptorProto.GetName() != fileDescriptorProto.GetName() {
+			newFileDescriptorSet.File = append(newFileDescriptorSet.File, iFileDescriptorProto)
+		}
+	}
+	newFileDescriptorSet.File = append(newFileDescriptorSet.File, fileDescriptorProto)
+	return newFileDescriptorSet, nil
+}
+```
+
+最终将fileDescriptorSet包装为grpcurl的
+
+```
+source := grpcurl.DescriptorSourceFromFileDescriptorSet(fileDescriptorSet)
+```
+
+```
+import "github.com/tgrpc/grpcurl"
+
+// DescriptorSource is a source of protobuf descriptor information. It can be backed by a FileDescriptorSet
+// proto (like a file generated by protoc) or a remote server that supports the reflection API.
+type DescriptorSource interface {
+	// ListServices returns a list of fully-qualified service names. It will be all services in a set of
+	// descriptor files or the set of all services exposed by a GRPC server.
+	ListServices() ([]string, error)
+	// FindSymbol returns a descriptor for the given fully-qualified symbol name.
+	FindSymbol(fullyQualifiedName string) (desc.Descriptor, error)
+	// AllExtensionsForType returns all known extension fields that extend the given message type name.
+	AllExtensionsForType(typeName string) ([]*desc.FieldDescriptor, error)
+}
+```
+
+最终，grpcurl调用grpc服务, source就是上面得到的DescriptorSource：
+
+```
+func InvokeRpc(ctx context.Context, source DescriptorSource, cc *grpc.ClientConn, methodName string,
+	headers []string, handler InvocationEventHandler, requestData RequestMessageSupplier) error
+```
+

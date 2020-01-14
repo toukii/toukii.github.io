@@ -31,27 +31,27 @@
 	<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/github/github-markdown.css?v=0.1">
 <script src="http://7xku3c.com1.z0.glb.clouddn.com/static/js/jquery-1.10.2.min.js"></script>
 <script src="http://7xku3c.com1.z0.glb.clouddn.com/code/code.js?v=0.1"></script>
-<h1><a name="go-基础" class="anchor" href="#go-%E5%9F%BA%E7%A1%80" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>go 基础</h1>
-<h2><a name="基本语法" class="anchor" href="#%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
-基本语法</h2>
+<h2><a name="mutex-转载" class="anchor" href="#mutex-%E8%BD%AC%E8%BD%BD" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>Mutex <a href="https://learnku.com/articles/39577?hmsr=toutiao.io&amp;utm_medium=toutiao.io&amp;utm_source=toutiao.io" rel="nofollow">转载</a></h2>
 
-<p><a href="base-grammar.html" rel="nofollow">基本语法</a></p>
-<h2><a name="go内置函数" class="anchor" href="#go%E5%86%85%E7%BD%AE%E5%87%BD%E6%95%B0" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
-go内置函数</h2>
+<p>锁分为4大类：</p>
 
-<p><a href="base-interface.html" rel="nofollow">interface 总结</a></p>
+<pre><code>独占锁：mutex.Lock  rwmuxt.Lock
+共享锁：rwmutx.RLock
+乐观锁：不提前获取锁，真正执行的代码段才lock
+悲观锁：提前获取锁lock
+</code></pre>
 
-<p><a href="base-defer.html" rel="nofollow">defer 总结</a></p>
+<p>使用锁的注意点：</p>
 
-<p><a href="base-chann.html" rel="nofollow">chan 总结</a></p>
-
-<p><a href="base-import.html" rel="nofollow">import</a></p>
-
-<p><a href="base-locker.html" rel="nofollow">locker</a></p>
-<h2><a name="常见语法解析" class="anchor" href="#%E5%B8%B8%E8%A7%81%E8%AF%AD%E6%B3%95%E8%A7%A3%E6%9E%90" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
-常见语法解析</h2>
-
-<p><a href="base-value.html" rel="nofollow">值传递</a></p>
+<pre><code>同一个协程不能连续多次调用 Lock, 否则发生死锁
+锁资源时尽量缩小资源的范围，以免引起其它协程超长时间等待
+mutex 传递给外部的时候需要传指针，不然就是实例的拷贝，会引起锁失败
+善用 defer 确保在函数内释放了锁
+使用 - race 在运行时检测数据竞争问题，go test -race ....，go build -race ....
+善用静态工具检查锁的使用问题
+使用 go-deadlock 检测死锁，和指定锁超时的等待问题 (自己百度工具用法)
+能用 channel 的场景别使用成了 lock
+</code></pre>
 
 
 

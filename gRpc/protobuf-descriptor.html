@@ -82,61 +82,125 @@ MethodDescriptor 获取各个rpc中的request、response、名称等
 
 <pre><code>0ab1 020a 0d67 7265 6574 6572 2e70 726f
 746f 120a 6865 6c6c 6f77 6f72 6c64 2222
-0a0c 4865 6c6c 6f52 6571 7565 7374 1212
-0a04 6e61 6d65 1801 2001 2809 5204 6e61
-6d65 2226 0a0a 4865 6c6c 6f52 6570 6c79
-1218 0a07 6d65 7373 6167 6518 0120 0128
-0952 076d 6573 7361 6765 328d 010a 0747
-7265 6574 6572 123e 0a08 5361 7948 656c
-6c6f 1218 2e68 656c 6c6f 776f 726c 642e
-4865 6c6c 6f52 6571 7565 7374 1a16 2e68
-656c 6c6f 776f 726c 642e 4865 6c6c 6f52
-6570 6c79 2200 1242 0a0a 5361 7948 656c
-6c6f 5632 1218 2e68 656c 6c6f 776f 726c
-642e 4865 6c6c 6f52 6571 7565 7374 1a16
-2e68 656c 6c6f 776f 726c 642e 4865 6c6c
-6f52 6570 6c79 2200 3001 4230 0a1b 696f
-2e67 7270 632e 6578 616d 706c 6573 2e68
-656c 6c6f 776f 726c 6442 0f48 656c 6c6f
-576f 726c 6450 726f 746f 5001 6206 7072
-6f74 6f33 0ad1 040a 0a6c 616e 672e 7072
-6f74 6f12 0a68 656c 6c6f 776f 726c 6422
-370a 074c 6973 7452 6571 1216 0a06 6f66
-6673 6574 1801 2001 2805 5206 6f66 6673
-6574 1214 0a05 6c69 6d69 7418 0220 0128
-0552 056c 696d 6974 2267 0a04 4c61 6e67
-1212 0a04 6e61 6d65 1801 2001 2809 5204
-6e61 6d65 121a 0a08 6269 7274 6864 6179
-1802 2001 2803 5208 6269 7274 6864 6179
-122f 0a08 7665 7273 696f 6e73 1803 2003
-280b 3213 2e68 656c 6c6f 776f 726c 642e
-5665 7273 696f 6e52 0876 6572 7369 6f6e
-7322 9f01 0a07 5665 7273 696f 6e12 0e0a
-0269 6418 0120 0128 0552 0269 6412 180a
-0776 6572 7369 6f6e 1802 2001 2809 5207
-7665 7273 696f 6e12 120a 0464 6573 6318
-0320 0128 0952 0464 6573 6312 140a 0576
-6933 3273 1804 2003 2805 5205 7669 3332
-7312 140a 0576 7374 7273 1805 2003 2809
-5205 7673 7472 7312 140a 0576 6936 3473
-1806 2003 2803 5205 7669 3634 7312 140a
-0576 6636 3473 1807 2003 2801 5205 7666
-3634 7322 520a 084c 6973 7452 6573 7012
-260a 056c 616e 6773 1801 2003 280b 3210
-2e68 656c 6c6f 776f 726c 642e 4c61 6e67
-5205 6c61 6e67 7312 1e0a 0a74 6f74 616c
-436f 756e 7418 0220 0128 0552 0a74 6f74
-616c 436f 756e 7422 200a 0a47 6574 4c61
-6e67 5265 7112 120a 046e 616d 6518 0120
-0128 0952 046e 616d 6532 750a 0b4c 616e
-6753 6572 7669 6365 1231 0a04 4c69 7374
-1213 2e68 656c 6c6f 776f 726c 642e 4c69
-7374 5265 711a 142e 6865 6c6c 6f77 6f72
-6c64 2e4c 6973 7452 6573 7012 330a 0747
-6574 4c61 6e67 1216 2e68 656c 6c6f 776f
+
+....
+
 726c 642e 4765 744c 616e 6752 6571 1a10
 2e68 656c 6c6f 776f 726c 642e 4c61 6e67
 6206 7072 6f74 6f33 
+</code></pre>
+<h2><a name="go获取proto描述" class="anchor" href="#go%E8%8E%B7%E5%8F%96proto%E6%8F%8F%E8%BF%B0" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+Go获取proto描述</h2>
+
+<pre><code>import &#34;github.com/golang/protobuf/protoc-gen-go/descriptor&#34;
+</code></pre>
+
+<pre><code>type FileDescriptorSet struct {
+	File                 []*FileDescriptorProto `protobuf:&#34;bytes,1,rep,name=file&#34; json:&#34;file,omitempty&#34;`
+	XXX_NoUnkeyedLiteral struct{}               `json:&#34;-&#34;`
+	XXX_unrecognized     []byte                 `json:&#34;-&#34;`
+	XXX_sizecache        int32                  `json:&#34;-&#34;`
+}
+
+// Describes a complete .proto file.
+type FileDescriptorProto struct {
+	Name    *string `protobuf:&#34;bytes,1,opt,name=name&#34; json:&#34;name,omitempty&#34;`
+	Package *string `protobuf:&#34;bytes,2,opt,name=package&#34; json:&#34;package,omitempty&#34;`
+	// Names of files imported by this file.
+	Dependency []string `protobuf:&#34;bytes,3,rep,name=dependency&#34; json:&#34;dependency,omitempty&#34;`
+	// Indexes of the public imported files in the dependency list above.
+	PublicDependency []int32 `protobuf:&#34;varint,10,rep,name=public_dependency,json=publicDependency&#34; json:&#34;public_dependency,omitempty&#34;`
+	// Indexes of the weak imported files in the dependency list.
+	// For Google-internal migration only. Do not use.
+	WeakDependency []int32 `protobuf:&#34;varint,11,rep,name=weak_dependency,json=weakDependency&#34; json:&#34;weak_dependency,omitempty&#34;`
+	// All top-level definitions in this file.
+	MessageType []*DescriptorProto        `protobuf:&#34;bytes,4,rep,name=message_type,json=messageType&#34; json:&#34;message_type,omitempty&#34;`
+	EnumType    []*EnumDescriptorProto    `protobuf:&#34;bytes,5,rep,name=enum_type,json=enumType&#34; json:&#34;enum_type,omitempty&#34;`
+	Service     []*ServiceDescriptorProto `protobuf:&#34;bytes,6,rep,name=service&#34; json:&#34;service,omitempty&#34;`
+	Extension   []*FieldDescriptorProto   `protobuf:&#34;bytes,7,rep,name=extension&#34; json:&#34;extension,omitempty&#34;`
+	Options     *FileOptions              `protobuf:&#34;bytes,8,opt,name=options&#34; json:&#34;options,omitempty&#34;`
+	// This field contains optional information about the original source code.
+	// You may safely remove this entire field without harming runtime
+	// functionality of the descriptors -- the information is needed only by
+	// development tools.
+	SourceCodeInfo *SourceCodeInfo `protobuf:&#34;bytes,9,opt,name=source_code_info,json=sourceCodeInfo&#34; json:&#34;source_code_info,omitempty&#34;`
+	// The syntax of the proto file.
+	// The supported values are &#34;proto2&#34; and &#34;proto3&#34;.
+	Syntax               *string  `protobuf:&#34;bytes,12,opt,name=syntax&#34; json:&#34;syntax,omitempty&#34;`
+	XXX_NoUnkeyedLiteral struct{} `json:&#34;-&#34;`
+	XXX_unrecognized     []byte   `json:&#34;-&#34;`
+	XXX_sizecache        int32    `json:&#34;-&#34;`
+}
+</code></pre>
+
+<p>descriptor.FileDescriptorSet 描述了一个FileDescriptorProto的集合，包含了它自身的定义和一些依赖定义。
+FileDescriptorProto 描述了单个FileDescProto的属性：名称、服务、定义等。</p>
+
+<p>获取descriptor.FileDescriptorSet：</p>
+
+<pre><code>data, err := ioutil.ReadFile(&#34;helloworld.Greeter.pbin&#34;)
+if err != nil {
+	return nil, err
+}
+fileDescriptorSet := &amp;descriptor.FileDescriptorSet{}
+if err := proto.Unmarshal(data, fileDescriptorSet); err != nil {
+	return nil, err
+}
+</code></pre>
+
+<p>FileDescriptorProto检查：
+fileDescriptorProto: 包含当前调用服务的fileDescriptorProto， fileDescriptorSet: 依赖的fileDescriptorProto集合。</p>
+
+<pre><code>func SortFileDescriptorSet(fileDescriptorSet *descriptor.FileDescriptorSet, fileDescriptorProto *descriptor.FileDescriptorProto) (*descriptor.FileDescriptorSet, error) {
+	// best-effort checks
+	names := make(map[string]struct{}, len(fileDescriptorSet.File))
+	for _, iFileDescriptorProto := range fileDescriptorSet.File {
+		if iFileDescriptorProto.GetName() == &#34;&#34; {
+			return nil, fmt.Errorf(&#34;no name on FileDescriptorProto&#34;)
+		}
+		if _, ok := names[iFileDescriptorProto.GetName()]; ok {
+			return nil, fmt.Errorf(&#34;duplicate FileDescriptorProto in FileDescriptorSet: %s&#34;, iFileDescriptorProto.GetName())
+		}
+		names[iFileDescriptorProto.GetName()] = struct{}{}
+	}
+	if _, ok := names[fileDescriptorProto.GetName()]; !ok {
+		return nil, fmt.Errorf(&#34;no FileDescriptorProto named %s in FileDescriptorSet with names %v&#34;, fileDescriptorProto.GetName(), names)
+	}
+	newFileDescriptorSet := &amp;descriptor.FileDescriptorSet{}
+	for _, iFileDescriptorProto := range fileDescriptorSet.File {
+		if iFileDescriptorProto.GetName() != fileDescriptorProto.GetName() {
+			newFileDescriptorSet.File = append(newFileDescriptorSet.File, iFileDescriptorProto)
+		}
+	}
+	newFileDescriptorSet.File = append(newFileDescriptorSet.File, fileDescriptorProto)
+	return newFileDescriptorSet, nil
+}
+</code></pre>
+
+<p>最终将fileDescriptorSet包装为grpcurl的</p>
+
+<pre><code>source := grpcurl.DescriptorSourceFromFileDescriptorSet(fileDescriptorSet)
+</code></pre>
+
+<pre><code>import &#34;github.com/tgrpc/grpcurl&#34;
+
+// DescriptorSource is a source of protobuf descriptor information. It can be backed by a FileDescriptorSet
+// proto (like a file generated by protoc) or a remote server that supports the reflection API.
+type DescriptorSource interface {
+	// ListServices returns a list of fully-qualified service names. It will be all services in a set of
+	// descriptor files or the set of all services exposed by a GRPC server.
+	ListServices() ([]string, error)
+	// FindSymbol returns a descriptor for the given fully-qualified symbol name.
+	FindSymbol(fullyQualifiedName string) (desc.Descriptor, error)
+	// AllExtensionsForType returns all known extension fields that extend the given message type name.
+	AllExtensionsForType(typeName string) ([]*desc.FieldDescriptor, error)
+}
+</code></pre>
+
+<p>最终，grpcurl调用grpc服务, source就是上面得到的DescriptorSource：</p>
+
+<pre><code>func InvokeRpc(ctx context.Context, source DescriptorSource, cc *grpc.ClientConn, methodName string,
+	headers []string, handler InvocationEventHandler, requestData RequestMessageSupplier) error
 </code></pre>
 
 
