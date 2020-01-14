@@ -83,26 +83,33 @@ http.ListenAndServe(&#34;localhost:8080&#34;, nil)
 指标采集</h3>
 
 <ol>
-<li>go tool pprof
-<code>
-go tool pprof http://127.0.0.1:8080/debug/pprof/profile\?seconds\=30
-go tool pprof -alloc_space http://127.0.0.1:8080/debug/pprof/heap
-</code>
-日志里有有采集数据的保存路径
-Saved profile in /Users/xxx/pprof/pprof.xxx.samples.cpu.002.pb.gz
-<code>
-go-torch /Users/xxx/pprof/pprof.xxx.samples.cpu.002.pb.gz
-</code></li>
-<li>curl
-<code>
-curl http://127.0.0.1:8080/debug/pprof/profile &gt;&gt; app_cpu.profile
-curl http://localhost:8080/debug/pprof/heap &gt;&gt; app_heap.profile
-</code></li>
-<li>go-torch
-<code>
-go-torch -u http://127.0.0.1:8080 -p &gt; torch.svg
-</code></li>
+<li>go tool pprof</li>
 </ol>
+
+<pre><code>go tool pprof http://127.0.0.1:8080/debug/pprof/profile\?seconds\=30
+go tool pprof -alloc_space http://127.0.0.1:8080/debug/pprof/heap
+</code></pre>
+
+<p>日志里有有采集数据的保存路径
+Saved profile in /Users/xxx/pprof/pprof.xxx.samples.cpu.002.pb.gz</p>
+
+<pre><code>go-torch /Users/xxx/pprof/pprof.xxx.samples.cpu.002.pb.gz
+</code></pre>
+
+<ol>
+<li>curl</li>
+</ol>
+
+<pre><code>curl http://127.0.0.1:8080/debug/pprof/profile &gt;&gt; app_cpu.profile
+curl http://localhost:8080/debug/pprof/heap &gt;&gt; app_heap.profile
+</code></pre>
+
+<ol>
+<li>go-torch</li>
+</ol>
+
+<pre><code>go-torch -u http://127.0.0.1:8080 -p &gt; torch.svg
+</code></pre>
 <h3><a name="火焰图工具-go-torch" class="anchor" href="#%E7%81%AB%E7%84%B0%E5%9B%BE%E5%B7%A5%E5%85%B7-go-torch" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
 火焰图工具 go-torch</h3>
 

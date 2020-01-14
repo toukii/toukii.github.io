@@ -49,21 +49,28 @@ http.ListenAndServe("localhost:8080", nil)
 ### 指标采集
 
 1. go tool pprof
+
 ```
 go tool pprof http://127.0.0.1:8080/debug/pprof/profile\?seconds\=30
 go tool pprof -alloc_space http://127.0.0.1:8080/debug/pprof/heap
 ```
+
 日志里有有采集数据的保存路径
 Saved profile in /Users/xxx/pprof/pprof.xxx.samples.cpu.002.pb.gz
+
 ```
 go-torch /Users/xxx/pprof/pprof.xxx.samples.cpu.002.pb.gz
 ```
+
 2. curl
+
 ```
 curl http://127.0.0.1:8080/debug/pprof/profile >> app_cpu.profile
 curl http://localhost:8080/debug/pprof/heap >> app_heap.profile
 ```
+
 3. go-torch
+
 ```
 go-torch -u http://127.0.0.1:8080 -p > torch.svg
 ```
