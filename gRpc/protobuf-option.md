@@ -130,3 +130,5 @@ option: preffix:"/rest/v1/api"
 
 结果取到了rest.preffix为protobuf里定义的内容。在正常的业务中，一般用于生成代码。
 extension信息都可以在`file *generator.FileDescriptor`中得到，验证程序是通过desc工具得到的。
+
+也可以参考：[Go语言高级编程 Protobuf扩展](https://chai2010.gitbooks.io/advanced-go-programming-book/content/ch4-rpc/ch4-07-pbgo.html)
