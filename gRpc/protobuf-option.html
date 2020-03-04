@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<title>toukii.github.io</title>
+<meta property="og:title" content="blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TOUKII GITHUB" />
+<meta property="og:description" content="TOUKII GITHUB" />
+<link rel="canonical" href="http://toukii.github.io/Go/base2.html" />
+<meta property="og:url" content="http://toukii.github.io/Go/base2.html" />
+<meta property="og:site_name" content="toukii.github.io" />
+<script type="application/ld+json">
+{"name":null,"description":"TOUKII GITHUB","author":null,"@type":"WebPage","url":"http://toukii.github.io/Go/base2.html","image":null,"publisher":null,"headline":"诡异:区别于其他语言","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/content.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/code.css">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+        <h1><a href="http://toukii.github.io/">toukii.github.io</a></h1>
+      
+
+<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/code/code.css?v=0.4">
+	<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/github/github-markdown.css?v=0.1">
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/static/js/jquery-1.10.2.min.js"></script>
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/code/code.js?v=0.1"></script>
+<h1><a name="protobuf扩展" class="anchor" href="#protobuf%E6%89%A9%E5%B1%95" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>protobuf扩展</h1>
+
+<p>protobuf 使用option扩展，option有如下几种类型：</p>
+
+<pre><code>FileOptions
+ServiceOptions
+MethodOptions
+MessageOptions
+FieldOptions
+EnumOptions
+EnumValueOptions
+</code></pre>
+
+<p>这些option定义在 google.protobuf/descriptor.proto 中。</p>
+
+<p>利用option可以增加一些自定义的选项，比如：
+使用ServiceOptions控制Service是否开放grpc、http；
+使用MethodOptions控制是否为接口增加缓存，增加鉴权控制等。
+这些自定义选项很活泛，可以满足针对不同级别的扩展。</p>
+
+<p>我们以ServiceOptions为例，实现针对Service的扩展：http服务路由路径前缀(一般路由前缀已经是确定的并在代码里hard code的，不需要这种扩展，只是举个例子)，定义所有服务的路由前缀是：<code>/rest/v1/api</code></p>
+<h2><a name="服务扩展" class="anchor" href="#%E6%9C%8D%E5%8A%A1%E6%89%A9%E5%B1%95" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+服务扩展：</h2>
+
+<p>descriptor代码使用gogo库。</p>
+
+<p>google.protobuf/descriptor.proto</p>
+
+<pre><code>syntax = &#34;proto2&#34;;
+
+package google.protobuf;
+option go_package = &#34;github.com/gogo/protobuf/protoc-gen-gogo/descriptor;descriptor&#34;;
+
+message ServiceOptions {
+	...
+}
+</code></pre>
+
+<p>extension.proto</p>
+
+<pre><code>syntax = &#34;proto3&#34;;
+package extension;
+
+option go_package = &#34;github.com/tgrpc/ngrpc/helloworld/rpc/extension&#34;;
+
+import &#34;google.protobuf/descriptor.proto&#34;;
+
+extend google.protobuf.ServiceOptions {
+    HttpRestOption rest = 20200229;
+}
+
+message HttpRestOption {
+	// 路由前缀
+	string preffix = 1;
+}
+</code></pre>
+
+<p>helloworld/greeter.proto</p>
+
+<pre><code>syntax = &#34;proto3&#34;;
+import &#34;extension/extension.proto&#34;;
+package helloworld;
+
+service Greeter {
+  option (extension.rest).preffix = &#34;/rest/v1/api&#34;;
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+</code></pre>
+
+<p>生成扩展代码：</p>
+
+<pre><code>protoc -I . --gogo_out=plugins=grpc:extension extension/extension.proto
+protoc -I . --gogo_out=plugins=grpc:. helloworld/greeter.proto
+</code></pre>
+<h2><a name="验证扩展" class="anchor" href="#%E9%AA%8C%E8%AF%81%E6%89%A9%E5%B1%95" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+验证扩展</h2>
+
+<pre><code>package main
+
+import (
+	&#34;fmt&#34;
+
+	&#34;github.com/gogo/protobuf/proto&#34;
+	ngrpc &#34;github.com/tgrpc/ngrpc/extension&#34;
+	&#34;github.com/tgrpc/desc&#34;
+)
+
+var (
+	rawDescs = []string{&#34;H4sIAAAAAAAC/+KSyEjNyckvzy/KSdFPL0pNLUkt0isoyi/JF+JCyEhJplaUpOYVZ+bn6cNZEGVKSlw8HiCFQamFpanFJUJCXCx5ibmpEowKjBqcQWC2khoXF1RNQU6lkAQXe25qcXFiOkwRjGu0iJGL3R3iCCE7Lo7gxEqwNiEJPYRb9JBtkxLDIlOQU6nEIOTExQXTH2ZEjgkGjFLCqza1+/Jx8egXpRaX6JcZ6icWZDoZcEln5uulFxUk66VWJOYW5KQWIxnhxA82IxzEDgAFUABjEhs4pIwBAQAA///41OZhbAEAAA==&#34;, &#34;H4sIAAAAAAAC/+KSTK0oSc0rzszP04ez9AqK8kvyhTjhAlIK6fn56TmpEImk0jT9lNTi5KLMgpL8IoiYkhYXn0dJSUFQanGJf0FJZn6ekAQXe0FRalpaZoUEowKjBmcQjGsVyMVSlFpcIiSvh2asXnBqUVlmcirEhGKJpd8ucCowanAbSeohHIdqTRDYKCelKIX0zJKM0iS95Pxc/ZL0ooJk/TwwCdeYxAa2xhgQAAD//8xQTBPzAAAA&#34;,
+&#34;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&#34;}
+)
+
+func main() {
+	fileset, err := desc.DecodeGoGoFileDescriptorSetByBase64Str(&#34;&#34;, rawDescs)
+	if err != nil {
+		fmt.Printf(&#34;%+v&#34;, err)
+		return
+	}
+	for _, file := range fileset.File {
+		fmt.Println(file.GetName())
+		if file.GetName() != &#34;helloworld/greeter.proto&#34; {
+			continue
+		}
+		for _, service := range file.Service {
+			fmt.Println(&#34;service.Name: &#34;, service.GetName())
+			os1, err := proto.GetExtension(service.GetOptions(), ngrpc.E_Rest)
+			fmt.Println(os1, err)
+			opt := os1.(*ngrpc.HttpRestOption)
+			fmt.Printf(&#34;option: %+v\n&#34;, opt)
+		}
+	}
+}
+</code></pre>
+
+<p>输出结果：</p>
+
+<pre><code>helloworld/greeter.proto
+service.Name:  Greeter
+option: preffix:&#34;/rest/v1/api&#34;
+</code></pre>
+
+<p>结果取到了rest.preffix为protobuf里定义的内容。在正常的业务中，一般用于生成代码。
+extension信息都可以在<code>file *generator.FileDescriptor</code>中得到，验证程序是通过desc工具得到的。</p>
+
+
+
+      
+    </div>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn@v0.02/js/toukii/jquery-1.10.2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn/js/code.js"></script>
+    
+  </body>
+</html>
+
