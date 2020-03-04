@@ -46,6 +46,16 @@ import _ "net/http/pprof"
 http.ListenAndServe("localhost:8080", nil)
 ```
 
+```
+import "net/http/pprof"
+
+mux.HandleFunc("/debug/pprof/", pprof.Index)
+mux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
+mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
+```
+
 ### 指标采集
 
 1. go tool pprof
