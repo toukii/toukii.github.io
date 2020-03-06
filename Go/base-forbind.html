@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<title>toukii.github.io</title>
+<meta property="og:title" content="blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TOUKII GITHUB" />
+<meta property="og:description" content="TOUKII GITHUB" />
+<link rel="canonical" href="http://toukii.github.io/Go/base2.html" />
+<meta property="og:url" content="http://toukii.github.io/Go/base2.html" />
+<meta property="og:site_name" content="toukii.github.io" />
+<script type="application/ld+json">
+{"name":null,"description":"TOUKII GITHUB","author":null,"@type":"WebPage","url":"http://toukii.github.io/Go/base2.html","image":null,"publisher":null,"headline":"诡异:区别于其他语言","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+
+<style type="text/css">
+.col-md-8{
+  min-height: 482px;
+}
+pre{
+  background-color: #DAF9CA;
+  color: #376956;
+}
+ 
+.lineB{
+  background-color: #dbffdb;
+}
+.line{
+  float:left;
+  width:25px;
+  background-color: #DAF9BA;
+}
+.linenum{
+  color: rgba(27,31,35,0.3);
+  float: left;
+  padding-left: 3px;
+  width: 25px;
+  -moz-user-select: none;  
+  -webkit-user-select: none;  
+  -ms-user-select: none;  
+  -khtml-user-select: none;  
+  user-select: none;
+}
+#fh5co-header-section.fh5co-scrolled{
+  background: #C3C3F3;
+}
+.hiddened{top: -90px;}
+.showed{top:0;z-index: 9999;}
+</style>
+
+
+    
+    <link rel="stylesheet" href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/code.css">
+  </head>
+  <body>
+
+<div class="container">
+  <div class="row row-bottom-padded-sm">
+    <div class="col-md-8 col-md-offset-2 markdown-body">
+      
+        <h1><a href="http://toukii.github.io/">toukii.github.io</a></h1>
+      
+
+<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/code/code.css?v=0.4">
+	<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/github/github-markdown.css?v=0.1">
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/static/js/jquery-1.10.2.min.js"></script>
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/code/code.js?v=0.1"></script>
+<h1><a name="循环变量绑定转载" class="anchor" href="#%E5%BE%AA%E7%8E%AF%E5%8F%98%E9%87%8F%E7%BB%91%E5%AE%9A%E8%BD%AC%E8%BD%BD" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>循环变量绑定<a href="https://rainbowmango.gitbook.io/go/appendix/unpinned" rel="nofollow">转载</a></h1>
+
+<p>题目1</p>
+
+<pre><code>func Process1(tasks []string) {
+    for _, task := range tasks {
+        // 启动协程并发处理任务
+        go func() {
+            fmt.Printf(&#34;Worker start process task: %s\n&#34;, task)
+        }()
+    }
+}
+</code></pre>
+
+<p>题目2</p>
+
+<pre><code>func Process2(tasks []string) {
+    for _, task := range tasks {
+        // 启动协程并发处理任务
+        go func(t string) {
+            fmt.Printf(&#34;Worker start process task: %s\n&#34;, t)
+        }(task)
+    }
+}
+</code></pre>
+
+<p>题目3</p>
+
+<pre><code>func TestDouble(t *testing.T) {
+    var tests = []struct {
+        name         string
+        input        int
+        expectOutput int
+    }{
+        {
+            name:         &#34;double 1 should got 2&#34;,
+            input:        1,
+            expectOutput: 2,
+        },
+        {
+            name:         &#34;double 2 should got 4&#34;,
+            input:        2,
+            expectOutput: 4,
+        },
+    }
+
+    for _, test := range tests {
+        t.Run(test.name, func(t *testing.T) {
+            if test.expectOutput != Double(test.input) {
+                t.Fatalf(&#34;expect: %d, but got: %d&#34;, test.input, test.expectOutput)
+            }
+        })
+    }
+}
+</code></pre>
+
+<p>题目4</p>
+
+<pre><code>type Car struct {
+	Name string
+}
+
+cars := []Car{
+	Car{Name: &#34;Name1&#34;},
+	Car{Name: &#34;Name2&#34;},
+	Car{Name: &#34;Name3&#34;},
+	Car{Name: &#34;Name4&#34;},
+}
+
+newcars := make([]*Car, 0, len(cars))
+newcars2 := make([]*Car, 0, len(cars))
+for _, car := range cars {
+	newcars = append(newcars, &amp;car)
+	tmp := car
+	newcars2 = append(newcars2, &amp;tmp)
+}
+</code></pre>
+
+<ol>
+<li>for循环里的变量，每次循环都会给重新复制，如果要在协程闭包里使用, 需要用新(临时)变量绑定值：称为显示绑定，题目4中的tmp。</li>
+<li>也可以通过参数传递规避上面这种情况，其实参数传递也是用新变量(实参)绑定值，如题目2。</li>
+<li>for循环里的变量是<strong>同一个变量</strong>，所以取变量的地址，所有循环都是一样的。
+特别是range 后跟非指针数组（值数组）, 如果需要获得该数组里某些item的地址，需要使用新(临时)变量绑定值（显示绑定）；值数组的情况同样适用于值map。</li>
+</ol>
+<h2><a name="循环变量是易变的" class="anchor" href="#%E5%BE%AA%E7%8E%AF%E5%8F%98%E9%87%8F%E6%98%AF%E6%98%93%E5%8F%98%E7%9A%84" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+循环变量是易变的</h2>
+
+<p>循环变量实际上只是一个普通的变量。
+语句<code>for index, value := range xxx</code>中，<strong>每次循环index和value都会被重新赋值（并非生成新的变量）</strong>。</p>
+
+<p>如果循环体中会启动协程（并且协程会使用循环变量），就需要格外注意了，因为很可能循环结束后协程才开始执行， 此时，<strong>所有协程使用的循环变量有可能已被改写</strong>。</p>
+<h2><a name="循环变量需要绑定" class="anchor" href="#%E5%BE%AA%E7%8E%AF%E5%8F%98%E9%87%8F%E9%9C%80%E8%A6%81%E7%BB%91%E5%AE%9A" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+循环变量需要绑定</h2>
+
+<p><strong>协程从被创建到被调度执行期间循环变量极有可能被改写。</strong></p>
+
+<p>在题目一中，协程函数体中引用了循环变量task，， 这种情况下，我们称之为变量没有绑定。 所以，题目一打印结果是混乱的。很有可能（随机）所有协程执行的task都是列表中的最后一个task。</p>
+
+<p><strong>实参传递，实际上也生成了新的变量，也即间接完成了绑定</strong></p>
+
+<p>在题目二中，协程函数体中并没有直接引用循环变量task，而是使用的参数。而在创建协程时，循环变量task 作为函数参数传递给了协程。参数传递的过程实际上也生成了新的变量，也即间接完成了绑定。 所以，题目二实际上是没有问题的。</p>
+
+<p>在题目三中，测试用例名字test.name通过函数参数完成了绑定，而test.input 和 test.expectOutput则没有绑定。 然而题目三实际执行却不会有问题，因为t.Run(...)并不会启动新的协程，也就是循环体并没有并发。 些时，即便循环变量没有绑定也没有问题。 但是风险在于，如果t.Run(...)执行的测试体有可能并发（比如通过t.Parallel()），此时就极有可能引入问题。
+对于题目三，建议显式的绑定。</p>
+
+
+
+      
+    </div>
+  </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn@v0.02/js/toukii/jquery-1.10.2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn/js/code.js"></script>
+    
+  </body>
+</html>
+

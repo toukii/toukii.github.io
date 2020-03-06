@@ -19,3 +19,5 @@
 ## 常见语法解析
 
 [值传递](base-value.html)
+
+[for循环值绑定](base-forbind.html)
