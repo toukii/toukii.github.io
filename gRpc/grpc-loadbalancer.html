@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<title>toukii.github.io</title>
+<meta property="og:title" content="blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TOUKII GITHUB" />
+<meta property="og:description" content="TOUKII GITHUB" />
+<link rel="canonical" href="http://toukii.github.io/Go/base2.html" />
+<meta property="og:url" content="http://toukii.github.io/Go/base2.html" />
+<meta property="og:site_name" content="toukii.github.io" />
+<script type="application/ld+json">
+{"name":null,"description":"TOUKII GITHUB","author":null,"@type":"WebPage","url":"http://toukii.github.io/Go/base2.html","image":null,"publisher":null,"headline":"诡异:区别于其他语言","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/content.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/code.css">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+        <h1><a href="http://toukii.github.io/">toukii.github.io</a></h1>
+      
+
+<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/code/code.css?v=0.4">
+	<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/github/github-markdown.css?v=0.1">
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/static/js/jquery-1.10.2.min.js"></script>
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/code/code.js?v=0.1"></script>
+<h1><a name="grpc负载均衡" class="anchor" href="#grpc%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>grpc负载均衡</h1>
+<h2><a name="路由解析" class="anchor" href="#%E8%B7%AF%E7%94%B1%E8%A7%A3%E6%9E%90" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+路由解析</h2>
+
+<p><code>google.golang.org/grpc/naming/naming.go</code></p>
+
+<p><code>Resolver</code> 用于监控一个服务target，得到的Watcher可以跟踪服务地址的变化。维护此服务地址是负载均衡的基础。</p>
+
+<pre><code>// Resolver creates a Watcher for a target to track its resolution changes.
+type Resolver interface {
+	// Resolve creates a Watcher for target.
+	Resolve(target string) (Watcher, error)
+}
+</code></pre>
+
+<p><code>Watcher</code> 用于轮训，定期检测变化的地址信息。地址变化包括新增和删除，见Operation的定义</p>
+
+<pre><code>// Watcher watches for the updates on the specified target.
+type Watcher interface {
+	// Next blocks until an update or error happens. It may return one or more
+	// updates. The first call should get the full set of the results. It should
+	// return an error if and only if Watcher cannot recover.
+	Next() ([]*Update, error)
+	// Close closes the Watcher.
+	Close()
+}
+</code></pre>
+
+<pre><code>type Operation uint8
+
+const (
+	// Add indicates a new address is added.
+	Add Operation = iota
+	// Delete indicates an exisiting address is deleted.
+	Delete
+)
+</code></pre>
+<h2><a name="负载均衡" class="anchor" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+负载均衡</h2>
+
+<p><code>google.golang.org/grpc/balancer.go</code> 定义了Balancer接口：</p>
+
+<pre><code>type Balancer interface {
+	Start(target string, config BalancerConfig) error
+	Up(addr Address) (down func(error))
+	Get(ctx context.Context, opts BalancerGetOptions) (addr Address, put func(), err error)
+	Notify() &lt;-chan []Address
+	Close() error
+}
+</code></pre>
+
+<p>同时，提供了一种负载均衡的实现：</p>
+
+<pre><code>func RoundRobin(r naming.Resolver) Balancer {
+	return &amp;roundRobin{r: r}
+}
+</code></pre>
+<h2><a name="调用" class="anchor" href="#%E8%B0%83%E7%94%A8" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+调用</h2>
+
+<p>grpc的dail option中有一个option：WithBalancer</p>
+
+<pre><code>opts := []grpc.DialOption{
+	grpc.WithInsecure(),
+	grpc.WithBalancer(Resolver),
+}
+</code></pre>
+
+<p>WithBalancer定义：</p>
+
+<pre><code>func WithBalancer(b Balancer) DialOption {
+}
+</code></pre>
+
+<p>不同的服务发现有不同的<code>naming.Resolver</code>实现方法，我们只需要实现Resolver即可使用官方的RoundRobin负载均衡。</p>
+
+<p>grpc.WithBalancer(NewMyResolver(cfg))</p>
+
+
+
+      
+    </div>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn@v0.02/js/toukii/jquery-1.10.2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn/js/code.js"></script>
+    
+  </body>
+</html>
+
