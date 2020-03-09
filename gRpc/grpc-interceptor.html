@@ -1,0 +1,140 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<title>toukii.github.io</title>
+<meta property="og:title" content="blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TOUKII GITHUB" />
+<meta property="og:description" content="TOUKII GITHUB" />
+<link rel="canonical" href="http://toukii.github.io/Go/base2.html" />
+<meta property="og:url" content="http://toukii.github.io/Go/base2.html" />
+<meta property="og:site_name" content="toukii.github.io" />
+<script type="application/ld+json">
+{"name":null,"description":"TOUKII GITHUB","author":null,"@type":"WebPage","url":"http://toukii.github.io/Go/base2.html","image":null,"publisher":null,"headline":"诡异:区别于其他语言","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/content.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/code.css">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+        <h1><a href="http://toukii.github.io/">toukii.github.io</a></h1>
+      
+
+<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/code/code.css?v=0.4">
+	<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/github/github-markdown.css?v=0.1">
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/static/js/jquery-1.10.2.min.js"></script>
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/code/code.js?v=0.1"></script>
+<h1><a name="grpc-拦截器" class="anchor" href="#grpc-%E6%8B%A6%E6%88%AA%E5%99%A8" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>grpc 拦截器</h1>
+
+<p>grpc/interceptor.go中定义了4中拦截器：</p>
+
+<pre><code>type UnaryClientInterceptor func(ctx context.Context, method string, req, reply interface{}, cc *ClientConn, invoker UnaryInvoker, opts ...CallOption) error
+
+type StreamClientInterceptor func(ctx context.Context, desc *StreamDesc, cc *ClientConn, method string, streamer Streamer, opts ...CallOption) (ClientStream, error)
+
+type UnaryServerInterceptor func(ctx context.Context, req interface{}, info *UnaryServerInfo, handler UnaryHandler) (resp interface{}, err error)
+
+type StreamServerInterceptor func(srv interface{}, ss ServerStream, info *StreamServerInfo, handler StreamHandler) error
+</code></pre>
+
+<p>总体上，可以分为服务端拦截器和客户端拦截器；再细分可以分为Unary和Stream两种。本文以UnaryInterceptor为例，分别实现服务端和客户的拦截器。</p>
+<h2><a name="unaryserverinterceptor" class="anchor" href="#unaryserverinterceptor" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+UnaryServerInterceptor</h2>
+
+<p>先看一下grpc.NewServer方法，返回一个grpc Server，入参是ServerOption.</p>
+
+<pre><code>func NewServer(opt ...ServerOption) *Server {
+}
+</code></pre>
+
+<p>ServerOption中的options是非导出结构，所以扩展包中不能能返回ServerOption。</p>
+
+<pre><code>type ServerOption func(*options)
+</code></pre>
+
+<p>grpc中提供了若干种将扩展（中间件）转换为ServerOption的方法：</p>
+
+<pre><code>func UnaryInterceptor(i UnaryServerInterceptor) ServerOption {
+}
+func StreamInterceptor(i StreamServerInterceptor) ServerOption {
+}
+</code></pre>
+
+<p>此处提供了多种转为ServerOption的方法，为中间件提供了接口。</p>
+
+<p>所以，加载服务的的拦截器是通过 grpc.UnaryInterceptor(MyUnaryServerInterceptor)。</p>
+
+<p>以下是实现一个鉴权服务端拦截器：</p>
+
+<pre><code>func AuthInterceptor(ctx context.Context, req interface{}, 
+	info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, 
+		err error) {
+	cookie, err := extractHeader(ctx, &#34;cookie&#34;)
+	if err != nil {
+		log.Errorf(&#34;%+v&#34;, err)
+		return nil, errors.Cause(err)
+	}
+	log.Infof(&#34;cookie:%+v&#34;, cookie)
+
+	if err := biz.Auth(cookie, conf.Conf.AESKeybs, conf.Conf.AESSalt); 
+	err != nil {
+		log.Errorf(&#34;%+v&#34;, err)
+		return nil, errors.Cause(err)
+	}
+
+	return handler(ctx, req)
+}
+</code></pre>
+
+<p>一般，服务端的拦截器有很多。我们需要一个链式拦截器, <a href="https://github.com/grpc-ecosystem/go-grpc-middleware/blob/master/chain.go#L19" rel="nofollow"><code>github.com/grpc-ecosystem/go-grpc-middleware</code></a>:</p>
+
+<pre><code>func ChainUnaryServer(interceptors ...grpc.UnaryServerInterceptor) grpc.UnaryServerInterceptor {
+	n := len(interceptors)
+
+	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+		chainer := func(currentInter grpc.UnaryServerInterceptor, currentHandler grpc.UnaryHandler) grpc.UnaryHandler {
+			return func(currentCtx context.Context, currentReq interface{}) (interface{}, error) {
+				return currentInter(currentCtx, currentReq, info, currentHandler)
+			}
+		}
+
+		chainedHandler := handler
+		for i := n - 1; i &gt;= 0; i-- {
+			chainedHandler = chainer(interceptors[i], chainedHandler)
+		}
+
+		return chainedHandler(ctx, req)
+	}
+}
+</code></pre>
+
+<p>服务端注册中间件的最终代码：</p>
+
+<pre><code>grpc.NewServer(
+	grpc.UnaryInterceptor(
+		grpc_middleware.ChainUnaryServer(AuthInterceptor, XXInterceptor)))
+</code></pre>
+<h2><a name="unaryclientinterceptor" class="anchor" href="#unaryclientinterceptor" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+UnaryClientInterceptor</h2>
+
+<p>客户端的中间件添加在 <code>grpc.DialOption</code> 中，使用<code>grpc.WithUnaryInterceptor(MyClientInterceptor)</code> 包装。</p>
+
+<p><a href="https://github.com/grpc-ecosystem/go-grpc-middleware/blob/master/chain.go#L66" rel="nofollow"><code>github.com/grpc-ecosystem/go-grpc-middleware</code></a>也提供了Client链式拦截器：ChainUnaryClient。</p>
+
+
+
+      
+    </div>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn@v0.02/js/toukii/jquery-1.10.2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn/js/code.js"></script>
+    
+  </body>
+</html>
+
