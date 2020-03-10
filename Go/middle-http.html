@@ -1,0 +1,226 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<title>toukii.github.io</title>
+<meta property="og:title" content="blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TOUKII GITHUB" />
+<meta property="og:description" content="TOUKII GITHUB" />
+<link rel="canonical" href="http://toukii.github.io/Go/base2.html" />
+<meta property="og:url" content="http://toukii.github.io/Go/base2.html" />
+<meta property="og:site_name" content="toukii.github.io" />
+<script type="application/ld+json">
+{"name":null,"description":"TOUKII GITHUB","author":null,"@type":"WebPage","url":"http://toukii.github.io/Go/base2.html","image":null,"publisher":null,"headline":"诡异:区别于其他语言","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+
+<style type="text/css">
+.col-md-8{
+  min-height: 482px;
+}
+pre{
+  background-color: #DAF9CA;
+  color: #376956;
+}
+ 
+.lineB{
+  background-color: #dbffdb;
+}
+.line{
+  float:left;
+  width:25px;
+  background-color: #DAF9BA;
+}
+.linenum{
+  color: rgba(27,31,35,0.3);
+  float: left;
+  padding-left: 3px;
+  width: 25px;
+  -moz-user-select: none;  
+  -webkit-user-select: none;  
+  -ms-user-select: none;  
+  -khtml-user-select: none;  
+  user-select: none;
+}
+#fh5co-header-section.fh5co-scrolled{
+  background: #C3C3F3;
+}
+.hiddened{top: -90px;}
+.showed{top:0;z-index: 9999;}
+</style>
+
+
+    
+    <link rel="stylesheet" href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/code.css">
+  </head>
+  <body>
+
+<div class="container">
+  <div class="row row-bottom-padded-sm">
+    <div class="col-md-8 col-md-offset-2 markdown-body">
+      
+        <h1><a href="http://toukii.github.io/">toukii.github.io</a></h1>
+      
+
+<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/code/code.css?v=0.4">
+	<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/github/github-markdown.css?v=0.1">
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/static/js/jquery-1.10.2.min.js"></script>
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/code/code.js?v=0.1"></script>
+<h1><a name="http包中的扩展" class="anchor" href="#http%E5%8C%85%E4%B8%AD%E7%9A%84%E6%89%A9%E5%B1%95" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>http包中的扩展</h1>
+
+<p>面向扩展编程，比面向接口编程增加了可扩展的路径：函数。也可以理解为面向接口编程+面向方法编程。</p>
+<h2><a name="两种servehttp的扩展" class="anchor" href="#%E4%B8%A4%E7%A7%8Dservehttp%E7%9A%84%E6%89%A9%E5%B1%95" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+两种ServeHTTP的扩展</h2>
+
+<pre><code>type Handler interface {
+	ServeHTTP(ResponseWriter, *Request)
+}
+</code></pre>
+
+<p>扩展Handler方法有两个途径：</p>
+
+<ol>
+<li>实现Handler接口</li>
+<li>扩展HandlerFunc方法，本质上和1没有区别，HandlerFunc实现了Handler接口，为扩展ServeHTTP增加了一条路径。</li>
+</ol>
+
+<p>一般，使用func扩展func，使用struct扩展interface。</p>
+
+<pre><code>type HandlerFunc func(ResponseWriter, *Request)
+
+func (f HandlerFunc) ServeHTTP(w ResponseWriter, r *Request) {
+	f(w, r)
+}
+</code></pre>
+
+<p>http包中提供了以下ServeHTTP的扩展：</p>
+
+<pre><code>HandlerFunc
+Server
+fileHandler(FileServer)
+stringHandler
+RedirectHandler
+redirectHandler
+ServeMux
+serverHandler
+TimeoutHandler
+timeoutHandler
+globalOptionsHandler
+initALPNRequest
+StripPrefix
+</code></pre>
+
+<p>还有 http/httputil.ReverseProxy, http/pprof.handler</p>
+
+
+<h2><a name="路由" class="anchor" href="#%E8%B7%AF%E7%94%B1" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+路由</h2>
+<h3><a name="注册路由" class="anchor" href="#%E6%B3%A8%E5%86%8C%E8%B7%AF%E7%94%B1" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+注册路由</h3>
+
+<pre><code>// 还提供了ServeTLS
+func Serve(l net.Listener, handler Handler) error {
+	srv := &amp;Server{Handler: handler}
+	return srv.Serve(l)
+}
+</code></pre>
+
+<pre><code>// HandleFunc registers the handler function for the given pattern.
+func (mux *ServeMux) HandleFunc(pattern string, handler func(ResponseWriter, *Request)) {
+	mux.Handle(pattern, HandlerFunc(handler))
+}
+
+// Handle registers the handler for the given pattern.
+func (mux *ServeMux) Handle(pattern string, handler Handler) {
+}
+</code></pre>
+
+<p>mux.HandleFunc的第二个参数也是可扩展的：可以定义一个函数，返回结果为<code>func(ResponseWriter, *Request)</code>, 函数体实现一些中间处理逻辑。
+mux内部用map保存handler的路由映射：</p>
+
+<pre><code>e := muxEntry{h: handler, pattern: pattern}
+mux.m[pattern] = e
+</code></pre>
+<h3><a name="解析路由" class="anchor" href="#%E8%A7%A3%E6%9E%90%E8%B7%AF%E7%94%B1" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+解析路由</h3>
+
+<pre><code>func (mux *ServeMux) ServeHTTP(w ResponseWriter, r *Request) {
+	h, _ := mux.Handler(r)
+	h.ServeHTTP(w, r)
+}
+</code></pre>
+
+<p>mux.Handler解析request的host和URL，<code>h, pattern = mux.match(host + path)</code>, 返回该请求的 handler(Handler), 最后调用该handler的实现：ServeHTTP。
+mux.Handler也会处理一些异常情况，如CONNECT，路由不匹配，这些异常情况会返回重定向handler：RedirectHandler。</p>
+
+<p>ServeMux的路由规则：支持注册路径：host+path或path， path可以为 /xxx/ 或 /xxx。
+path为 /xxx/的路由，会放到一个按路径长度降序的数组里（appendSorted），优先返回匹配最长的路由。</p>
+<h2><a name="扩展" class="anchor" href="#%E6%89%A9%E5%B1%95" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+扩展</h2>
+
+<p>扩展 HandleFunc</p>
+<h3><a name="链式拦截器扩展" class="anchor" href="#%E9%93%BE%E5%BC%8F%E6%8B%A6%E6%88%AA%E5%99%A8%E6%89%A9%E5%B1%95" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+链式拦截器扩展</h3>
+
+<pre><code>func FooHttpInterceptor(rw http.ResponseWriter, req *http.Request, handler http.HandlerFunc) http.HandlerFunc {
+	return func(rw http.ResponseWriter, req *http.Request) {
+		log.Println(&#34;FooHttpInterceptor&#34;, req.RequestURI)
+		handler(rw, req)
+	}
+}
+</code></pre>
+
+<pre><code>func Foo(h http.HandlerFunc) http.HandlerFunc {
+	fn := func(rw http.ResponseWriter, req *http.Request) {
+		log.Println(req.RequestURI)
+
+		h(rw, req)
+	}
+	return http.HandlerFunc(fn)
+}
+</code></pre>
+<h3><a name="数组式拦截器扩展" class="anchor" href="#%E6%95%B0%E7%BB%84%E5%BC%8F%E6%8B%A6%E6%88%AA%E5%99%A8%E6%89%A9%E5%B1%95" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+数组式拦截器扩展</h3>
+
+<pre><code>var (
+	_middlewares []Middleware
+)
+
+type Middleware func(http.HandlerFunc) http.HandlerFunc
+
+func WebapiInceptor(middlewares ...Middleware) func(originFunc http.HandlerFunc) http.HandlerFunc {
+	_middlewares = append(_middlewares, middlewares...)
+	return WebapiWarp
+}
+
+func WebapiWarp(originFunc http.HandlerFunc) http.HandlerFunc {
+	log.Println(&#34;WebapiWarp...&#34;)
+	currentFunc := originFunc
+	for _, it := range _middlewares {
+		currentFunc = it(currentFunc)
+	}
+	return currentFunc
+}
+</code></pre>
+
+<p>扩展 Handler</p>
+
+<p>如 <code>beego/mux.Mux</code>, &#39;gorilla.mux.Router&#39;。</p>
+
+
+
+      
+    </div>
+  </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn@v0.02/js/toukii/jquery-1.10.2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn/js/code.js"></script>
+    
+  </body>
+</html>
+

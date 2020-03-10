@@ -1,39 +1,160 @@
+<html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+	<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>时永宾的博客</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="" />
+  	<meta name="keywords" content="gopher" />
+  	<meta name="author" content="FREEHTML5.CO" />
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  	<!-- Facebook and Twitter integration -->
+	<meta property="og:title" content=""/>
+	<meta property="og:image" content=""/>
+	<meta property="og:url" content=""/>
+	<meta property="og:site_name" content=""/>
+	<meta property="og:description" content=""/>
+	<meta name="twitter:title" content="" />
+	<meta name="twitter:image" content="" />
+	<meta name="twitter:url" content="" />
+	<meta name="twitter:card" content="" />
 
-<!-- Begin Jekyll SEO tag v2.3.0 -->
-<title>toukii.github.io</title>
-<meta property="og:title" content="blog" />
-<meta property="og:locale" content="en_US" />
-<meta name="description" content="TOUKII GITHUB" />
-<meta property="og:description" content="TOUKII GITHUB" />
-<link rel="canonical" href="http://toukii.github.io/Go/base2.html" />
-<meta property="og:url" content="http://toukii.github.io/Go/base2.html" />
-<meta property="og:site_name" content="toukii.github.io" />
-<script type="application/ld+json">
-{"name":null,"description":"TOUKII GITHUB","author":null,"@type":"WebPage","url":"http://toukii.github.io/Go/base2.html","image":null,"publisher":null,"headline":"诡异:区别于其他语言","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
-<!-- End Jekyll SEO tag -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/content.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/code.css">
-  </head>
-  <body>
-    <div class="container-lg px-3 my-5 markdown-body">
-      
-        <h1><a href="http://toukii.github.io/">toukii.github.io</a></h1>
-      
+  	<!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+  	<link rel="shortcut icon" href="favicon.ico">
 
-{{.MDContent}}
+	<link rel="stylesheet" href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.css">
+	<link rel="stylesheet" href="http://localhost:8080/stylesheets/github-dark.css">
 
 
-      
-    </div>
-    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn@v0.02/js/toukii/jquery-1.10.2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn/js/code.js"></script>
-    <!-- <script>anchors.add();</script> -->
-  </body>
+<style type="text/css">
+.col-md-8{
+	min-height: 482px;
+}
+pre{
+	background-color: #DAF9CA;
+	color: #376956;
+	overflow: auto;
+}
+code{
+	overflow: auto;
+}
+.lineA{
+	/*background-color: #c1e9c1;*/
+	overflow: auto;
+}
+.lineB{
+	background-color: #dbffdb;
+	overflow: auto;
+}
+.line{
+	float:left;
+	width:25px;
+	background-color: #DAF9BA;
+}
+.linenum{
+	color: rgba(27,31,35,0.3);
+	float: left;
+	padding-left: 3px;
+	width: 25px;
+	-moz-user-select: none; /*火狐*/
+	-webkit-user-select: none; /*webkit浏览器*/
+	-ms-user-select: none; /*IE10*/
+	-khtml-user-select: none; /*早期浏览器*/
+	user-select: none;
+}
+#fh5co-header-section.fh5co-scrolled{
+	background: #C3C3F3;
+}
+.hiddened{top: -90px;}
+.showed{top:0;z-index: 9999;}
+</style>
+
+	</head>
+	<body>
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script type="text/javascript">
+$(function() {
+	$("pre").each(function(index, elem) {
+		var content = $(this).text();
+		var numctx = "<div class='line'>";
+		var lines = content.split("\n");
+		var result = '';
+		var ctx = '<code>';
+		if (lines.length<4) {return}
+		for (var i = 0; i < lines.length-1; i++) {
+			numctx += "<div class='linenum'>" + (i+1) + "</div>";
+			var c = lines[i];
+			if (c=="") {c="<br>";}
+			if (i%2==0) {
+				ctx+= "<div class='lineA'>" + c+"</div>";
+			}else{
+				ctx+= "<div class='lineB'>" + c+"</div>";
+			}
+		}
+		numctx += "</div>";
+		ctx += "</code>"
+		result += numctx + ctx;
+		$(this).html(result);
+	});
+	
+})
+$(document).ready(function(){  
+    var p=0,t=0;  
+  
+    $(window).scroll(function(e){  
+            p = $(this).scrollTop();  
+            if (p<=50) {
+            	$('body').addClass('fh5co-mobile-menu-visible');
+                $('#fh5co-header-section').addClass('fh5co-scrolled');
+                $('#fh5co-header-section').css("z-index",10);
+            }else{
+            
+	            if(t<=p){//下滚  
+	                $('body').removeClass('fh5co-mobile-menu-visible');
+	                $('#fh5co-header-section').removeClass('fh5co-scrolled');
+	                $('#fh5co-header-section').css("z-index",-1);
+	            }  
+	              
+	            if(t>p+100){//上滚  
+	                $('body').addClass('fh5co-mobile-menu-visible');
+	                $('#fh5co-header-section').addClass('fh5co-scrolled');
+	                $('#fh5co-header-section').css("z-index",10);
+	            }  
+	            setTimeout(function(){t = p;},300);   	
+            }      
+    });  
+});
+$(function(){  
+ //  	var scrollPos = $(this).scrollTop();
+	if ( $('body').hasClass('fh5co-mobile-menu-visible')==false ) {
+		$('body').addClass('fh5co-mobile-menu-visible');
+	}
+	$('#fh5co-header-section').addClass('fh5co-scrolled');
+});
+</script>
+
+<div style="margin-top: 20px;">
+	<div id="fh5co-intro" class="fh5co-section">
+		<div class="container">
+			<div class="row row-bottom-padded-sm">
+				<div class="col-md-8 col-md-offset-2">
+					{{.MDContent}}
+				</div>
+			</div>
+
+		</div>
+	</div>
+	
+	<footer id="fh5co-footer" style="margin-top: 10px;height: 30px">
+		<div class="container" >
+			<p class="text-muted fh5co-no-margin-bottom text-center"><small>&copy; 2015-2020 Toukii. All rights reserved.</p>
+		</div>
+	</footer>
+</div>
+
+	</body>
 </html>
-

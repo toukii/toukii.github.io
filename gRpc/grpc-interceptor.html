@@ -33,6 +33,8 @@
 <script src="http://7xku3c.com1.z0.glb.clouddn.com/code/code.js?v=0.1"></script>
 <h1><a name="grpc-拦截器" class="anchor" href="#grpc-%E6%8B%A6%E6%88%AA%E5%99%A8" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>grpc 拦截器</h1>
 
+<p>扩展功能一般依赖interface，go中多了一种选择：func。如大家熟知的 http.HandlerFunc</p>
+
 <p>grpc/interceptor.go中定义了4中拦截器：</p>
 
 <pre><code>type UnaryClientInterceptor func(ctx context.Context, method string, req, reply interface{}, cc *ClientConn, invoker UnaryInvoker, opts ...CallOption) error

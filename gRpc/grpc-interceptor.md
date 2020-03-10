@@ -1,5 +1,7 @@
 # grpc 拦截器
 
+扩展功能一般依赖interface，go中多了一种选择：func。如大家熟知的 http.HandlerFunc
+
 grpc/interceptor.go中定义了4中拦截器：
 
 
