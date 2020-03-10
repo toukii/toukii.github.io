@@ -17,12 +17,51 @@
 <script type="application/ld+json">
 {"name":null,"description":"TOUKII GITHUB","author":null,"@type":"WebPage","url":"http://toukii.github.io/Go/base2.html","image":null,"publisher":null,"headline":"诡异:区别于其他语言","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
 
+<style type="text/css">
+.col-md-8{
+  min-height: 482px;
+}
+pre{
+  background-color: #DAF9CA;
+  color: #376956;
+}
+ 
+.lineB{
+  background-color: #dbffdb;
+}
+.line{
+  float:left;
+  width:25px;
+  background-color: #DAF9BA;
+}
+.linenum{
+  color: rgba(27,31,35,0.3);
+  float: left;
+  padding-left: 3px;
+  width: 25px;
+  -moz-user-select: none;  
+  -webkit-user-select: none;  
+  -ms-user-select: none;  
+  -khtml-user-select: none;  
+  user-select: none;
+}
+#fh5co-header-section.fh5co-scrolled{
+  background: #C3C3F3;
+}
+.hiddened{top: -90px;}
+.showed{top:0;z-index: 9999;}
+</style>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/content.css">
+
+    
+    <link rel="stylesheet" href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/code.css">
   </head>
   <body>
-    <div class="container-lg px-3 my-5 markdown-body">
+
+<div class="container">
+  <div class="row row-bottom-padded-sm">
+    <div class="col-md-8 col-md-offset-2 markdown-body">
       
         <h1><a href="http://toukii.github.io/">toukii.github.io</a></h1>
       
@@ -37,10 +76,24 @@
 
 <p><a href="middle-syncMap.html" rel="nofollow">sync.Map</a></p>
 
+<p><a href="middle-http.html" rel="nofollow">http包的扩展</a></p>
+<h2><a name="实用技巧" class="anchor" href="#%E5%AE%9E%E7%94%A8%E6%8A%80%E5%B7%A7" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+实用技巧</h2>
+
+<p><a href="https://hanyajun.com/golang/int2sting/" rel="nofollow">json 序列化tag</a></p>
+
+<pre><code>,string ,omitxxx 接口：MarshalJSON UnMarshalJSON
+</code></pre>
+
+<p>json 反序列化有个有趣的现象：{&#34;123&#34;:{}}  可以用 map[string]interface{} 或 map[int64]interface{} 接收。</p>
+
 
 
       
     </div>
+  </div>
+</div>
+
     <script src="https://cdn.jsdelivr.net/gh/everfore/cdn@v0.02/js/toukii/jquery-1.10.2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/everfore/cdn/js/code.js"></script>
     

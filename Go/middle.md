@@ -4,6 +4,8 @@
 
 [sync.Map](middle-syncMap.html)
 
+[http包的扩展](middle-http.html)
+
 ## 实用技巧
 
 [json 序列化tag](https://hanyajun.com/golang/int2sting/) 

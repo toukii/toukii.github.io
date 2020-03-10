@@ -146,4 +146,4 @@ func WebapiWarp(originFunc http.HandlerFunc) http.HandlerFunc {
 
 扩展 Handler
 
-如 `beego/mux.Mux`, 'gorilla.mux.Router'。
+如 `beego/mux.Mux`, `gorilla.mux.Router`。
