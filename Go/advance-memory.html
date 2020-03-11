@@ -70,11 +70,15 @@ pre{
 	<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/github/github-markdown.css?v=0.1">
 <script src="http://7xku3c.com1.z0.glb.clouddn.com/static/js/jquery-1.10.2.min.js"></script>
 <script src="http://7xku3c.com1.z0.glb.clouddn.com/code/code.js?v=0.1"></script>
-<h1><a name="高阶" class="anchor" href="#%E9%AB%98%E9%98%B6" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>高阶</h1>
-<h2><a name="系统优化" class="anchor" href="#%E7%B3%BB%E7%BB%9F%E4%BC%98%E5%8C%96" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
-<a href="advanced-optimize.html" rel="nofollow">系统优化</a></h2>
-<h2><a name="go-内存分配" class="anchor" href="#go-%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
-<a href="advanced-memory.html" rel="nofollow">go 内存分配</a></h2>
+<h1><a name="内存分配" class="anchor" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>内存分配</h1>
+
+<p><img src="https://tonybai.com/wp-content/uploads/visualizing-memory-management-in-golang-3.png" alt=""></p>
+
+<p>arena：堆在已分配的虚拟内存中根据需要增长和缩小。当需要更多内存时，mheap从虚拟内存中以每块64MB（对于64位体系结构）为单位获取新内存， 这块内存被称为arena。这块内存也会被划分页并映射到span。</p>
+
+<p>mcache：这是一个非常有趣的构造。mcache是提供给P（逻辑处理器）的高速缓存，用于存储小对象（对象大小&lt;= 32Kb）。尽管这类似于线程堆栈，但它是堆的一部分，用于动态数据。所有类大小的mcache包含scan和noscan类型mspan。Goroutine可以从mcache没有任何锁的情况下获取内存，因为一次P只能有一个锁G。因此，这更有效。mcache从mcentral需要时请求新的span。</p>
+
+<p>mcentral：mcentral将相同大小级别的span归类在一起。</p>
 
 
 

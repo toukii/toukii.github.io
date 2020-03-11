@@ -3,6 +3,7 @@
 ## 基本语法
 
 [基本语法](base-grammar.html)
+[内存对齐](base-struct.html)
 
 ## go内置函数
 
@@ -12,7 +13,7 @@
 
 [chan 总结](base-chann.html)
 
-[import](base-import.html)
+[import 总结](base-import.html)
 
 [locker](base-locker.html)
 
