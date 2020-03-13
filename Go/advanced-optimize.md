@@ -1,5 +1,12 @@
 # 性能优化
 
+```
+It you can’t measure it, you can’t manage it
+你如果无法度量它，就无法管理它。
+--- 彼得德鲁克(管理学大师)
+```
+
+
 ## 性能优化方法论 [转载](https://mp.weixin.qq.com/s/snQ3T86usv4rXz0MMQvFfQ)
 
 性能优化与解bug不同，对工程师的技术广度和技术深度有所要求。性能问题不仅包含代码问题，还包括容器、操作系统、网络、存储、文件系统等问题。

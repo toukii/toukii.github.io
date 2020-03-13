@@ -92,10 +92,24 @@ mcentral将相同大小级别的span归类在一起。如果mcentral没有可用
 这是一个非常有趣的构造。mcache是提供给P（逻辑处理器）的高速缓存，用于存储小对象（对象大小&lt;= 32Kb）。尽管这类似于线程堆栈，但它是堆的一部分，用于动态数据。所有类大小的mcache包含scan和noscan类型mspan。Goroutine可以从mcache没有任何锁的情况下获取内存，因为一次P只能有一个锁G。因此，这更有效。mcache从mcentral需要时请求新的span。</p>
 
 <p>总结：
-mheap有若干个arena(64MB)组成；每个arena由若干个mcentral组成；每个mcentral有相同大小的mspan组成，这些不同大小的mcentral共同组成arena；mspan的大小有不同类别：像TCMalloc一样，Go将内存页按大小分为67个不同类别，大小从8字节到32KB。
-mcache是为P提供的高速缓存，&lt;= 32Kb；大于32Kb直接分配在arena。</p>
+mheap有若干个arena(64MB)组成；每个arena由若干个mcentral组成；每个mcentral有相同大小的mspan组成，这些不同大小的mcentral共同组成arena；mspan的大小有不同类别：像TCMalloc一样，Go将内存页按大小分为67个不同类别，大小从8字节到32KB。</p>
+
+<p>mcache是为P提供的高速缓存，缓存&lt;= 32Kb的对象，不需要锁，一个P只有一个G在使用；大于32Kb直接分配在arena，需要获取中央锁(central lock)。</p>
 <h2><a name="gc" class="anchor" href="#gc" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
 GC</h2>
+
+<p>三色标记法：</p>
+
+<p>对象的指针引用是一棵树（可能存在闭环），从根节点出发，可以遍历到所有引用（包括间接引用）的对象。</p>
+
+<ol>
+<li>从处于active的Goruntine的stack出发，标记根节点为黑色，根节点是引用的mspan的指针, mspan包括缓存在mcache中小于32Kb的mspan，和大于32Kb位于area中的mspan。</li>
+<li>当前节点以深度优先遍历标记节点，非叶子节点标记为灰色，叶子节点标记为黑色。叶子节点是noscan class和不包含指针的对象。</li>
+<li>将所有灰色节点标记为黑色结束标记。在标记过程中对象指针发生变化，将这个对象变为灰色，需要重新从该节点遍历。</li>
+</ol>
+
+<p>标记过程有专门的Goruntine完成，在标记过程中，GC标记了堆中的活动对象(被任何活动的Goroutine的栈中引用的）。当采集花费更长的时间时，该过程可以从应用程序中征用活动的Goroutine来辅助标记过程。
+标记完成后，可以回收mcentral中empty列表中非黑色对象，释放该span后移入nonempty列表。</p>
 
 
 

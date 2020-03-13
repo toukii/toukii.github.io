@@ -21,6 +21,19 @@ mcache:
 
 总结：
 mheap有若干个arena(64MB)组成；每个arena由若干个mcentral组成；每个mcentral有相同大小的mspan组成，这些不同大小的mcentral共同组成arena；mspan的大小有不同类别：像TCMalloc一样，Go将内存页按大小分为67个不同类别，大小从8字节到32KB。
-mcache是为P提供的高速缓存，<= 32Kb；大于32Kb直接分配在arena。
+
+mcache是为P提供的高速缓存，缓存<= 32Kb的对象，不需要锁，一个P只有一个G在使用；大于32Kb直接分配在arena，需要获取中央锁(central lock)。
 
 ## GC
+
+三色标记法：
+
+对象的指针引用是一棵树（可能存在闭环），从根节点出发，可以遍历到所有引用（包括间接引用）的对象。
+
+1. 从处于active的Goruntine的stack出发，标记根节点为黑色，根节点是引用的mspan的指针, mspan包括缓存在mcache中小于32Kb的mspan，和大于32Kb位于area中的mspan。
+2. 当前节点以深度优先遍历标记节点，非叶子节点标记为灰色，叶子节点标记为黑色。叶子节点是noscan class和不包含指针的对象。
+3. 将所有灰色节点标记为黑色结束标记。在标记过程中对象指针发生变化，将这个对象变为灰色，需要重新从该节点遍历。
+
+标记过程有专门的Goruntine完成，在标记过程中，GC标记了堆中的活动对象(被任何活动的Goroutine的栈中引用的）。当采集花费更长的时间时，该过程可以从应用程序中征用活动的Goroutine来辅助标记过程。
+标记完成后，可以回收mcentral中empty列表中非黑色对象，释放该span后移入nonempty列表。
+

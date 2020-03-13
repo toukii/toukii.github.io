@@ -104,3 +104,4 @@ j := 1
 
 [诡异:区别于其他语言](base2.html)
 
+## [语义例外](https://gfw.go101.org/article/exceptions.html)
