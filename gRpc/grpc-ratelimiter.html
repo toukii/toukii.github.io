@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<title>toukii.github.io</title>
+<meta property="og:title" content="blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TOUKII GITHUB" />
+<meta property="og:description" content="TOUKII GITHUB" />
+<link rel="canonical" href="http://toukii.github.io/Go/base2.html" />
+<meta property="og:url" content="http://toukii.github.io/Go/base2.html" />
+<meta property="og:site_name" content="toukii.github.io" />
+<script type="application/ld+json">
+{"name":null,"description":"TOUKII GITHUB","author":null,"@type":"WebPage","url":"http://toukii.github.io/Go/base2.html","image":null,"publisher":null,"headline":"诡异:区别于其他语言","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/content.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/code.css">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+        <h1><a href="http://toukii.github.io/">toukii.github.io</a></h1>
+      
+
+<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/code/code.css?v=0.4">
+	<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/github/github-markdown.css?v=0.1">
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/static/js/jquery-1.10.2.min.js"></script>
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/code/code.js?v=0.1"></script>
+<h1><a name="ratelimiter" class="anchor" href="#ratelimiter" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>ratelimiter</h1>
+
+<p>限流有多种实现，常用的方法有：</p>
+
+<ol>
+<li>计数器算法 每秒控制n次请求，先到先得到服务，拒绝多余的请求</li>
+<li>漏桶算法 每秒控制n次请求，匀速控制。</li>
+<li>令牌桶算法 综合1,2两种方法的折中，基本是匀速控流，当有多个可用令牌是允许瞬时处理多个请求。</li>
+</ol>
+<h2><a name="漏桶算法" class="anchor" href="#%E6%BC%8F%E6%A1%B6%E7%AE%97%E6%B3%95" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+漏桶算法</h2>
+
+<p>istio中的限流实现：</p>
+
+<p>github.com/istio/istio/pkg/mcp/rate</p>
+
+<pre><code>import &#34;golang.org/x/time/rate&#34;
+
+type Limit interface {
+	Wait(ctx context.Context) (err error)
+}
+
+func (c *Limiter) Create() Limit {
+	return rate.NewLimiter(
+		rate.Every(c.connectionFreq),
+		c.connectionBurstSize)
+}
+</code></pre>
+<h2><a name="令牌桶算法" class="anchor" href="#%E4%BB%A4%E7%89%8C%E6%A1%B6%E7%AE%97%E6%B3%95" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+令牌桶算法</h2>
+
+<p>github.com/tgrpc/interceptor/ratelimit</p>
+
+<pre><code>// 环形队列实现令牌桶限流
+type TokenBucket struct {
+	Size       int32
+	head, rear int32
+	sync.Mutex
+}
+
+func NewTokenBucket(size int32) *TokenBucket {
+	tb := &amp;TokenBucket{
+		Size: size + 1,
+	}
+	go tb.loopPut()
+	return tb
+}
+
+func (tb *TokenBucket) next(cur int32) int32 {
+	return (cur + 1) % tb.Size
+}
+
+func (tb *TokenBucket) Length() int32 {
+	return (tb.rear + tb.Size - tb.head) % tb.Size
+}
+
+func (tb *TokenBucket) Limit() bool {
+	tb.Lock()
+	defer tb.Unlock()
+	// 无令牌可用
+	if tb.head == tb.rear {
+		return false
+	}
+	tb.head = tb.next(tb.head)
+	fmt.Println(&#34;Limit&#34;, tb.head, tb.rear, tb.Length())
+	return true
+}
+
+// 将令牌放入桶中
+func (tb *TokenBucket) put() bool {
+	tb.Lock()
+	defer tb.Unlock()
+	// 桶已满，不需要放入
+	next := tb.next(tb.rear)
+	if next == tb.head {
+		return false
+	}
+	tb.rear = next
+	return true
+}
+
+func (tb *TokenBucket) loopPut() {
+	dur := time.Duration(int64(time.Second) / int64(tb.Size-1))
+	fmt.Printf(&#34;duration:%+v\n&#34;, dur)
+	ticker := time.NewTicker(dur)
+	for {
+		select {
+		case &lt;-ticker.C:
+			if tb.put() {
+				fmt.Println(&#34;put &#34;, tb.head, tb.rear, tb.Length())
+			}
+		}
+	}
+}
+</code></pre>
+<h2><a name="grpc限流中间件" class="anchor" href="#grpc%E9%99%90%E6%B5%81%E4%B8%AD%E9%97%B4%E4%BB%B6" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+grpc限流中间件</h2>
+
+<pre><code>import &#34;github.com/grpc-ecosystem/go-grpc-middleware/ratelimit&#34;
+
+type Limiter interface {
+	Limit() bool
+}
+
+func UnaryServerInterceptor(limiter Limiter) grpc.UnaryServerInterceptor {
+	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+		if limiter.Limit() {
+			return nil, status.Errorf(codes.ResourceExhausted, &#34;%s is rejected by grpc_ratelimit middleware, please retry later.&#34;, info.FullMethod)
+		}
+		return handler(ctx, req)
+	}
+}
+</code></pre>
+
+
+
+      
+    </div>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn@v0.02/js/toukii/jquery-1.10.2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn/js/code.js"></script>
+    
+  </body>
+</html>
+
