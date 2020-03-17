@@ -30,6 +30,8 @@ func (c *Limiter) Create() Limit {
 
 github.com/tgrpc/interceptor/ratelimit
 
+可以参考源代码，已使用atomic提升一倍性能。
+
 ```
 // 环形队列实现令牌桶限流
 type TokenBucket struct {

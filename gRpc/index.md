@@ -20,4 +20,6 @@
 
 [grpc 限流](grpc-ratelimiter.html)
 
+[grpc 熔断](grpc-circuit.html)
+
 
