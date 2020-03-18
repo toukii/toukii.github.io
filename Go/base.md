@@ -22,3 +22,9 @@
 [值传递](base-value.html)
 
 [for循环值绑定](base-forbind.html)
+
+## 算法
+
+[排序算法总结](base-sort.html)
+
+[排序算法代码](base-sortcode.html)
