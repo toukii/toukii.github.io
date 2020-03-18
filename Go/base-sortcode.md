@@ -146,20 +146,17 @@ func quickv2(data []int) int {
 	pivot := (low + high) >> 1
 	tmp := data[pivot]
 	for low < high {
-		for low < high && data[high] >= tmp {
+		for pivot < high && data[high] >= tmp {
 			high--
 		}
 		data[pivot] = data[high]
-		if high > pivot {
-			pivot = high
-		}
-		for low < high && data[low] <= tmp {
+		pivot = high
+
+		for low < pivot && data[low] <= tmp {
 			low++
 		}
 		data[pivot] = data[low]
-		if low < pivot {
-			pivot = low
-		}
+		pivot = low
 	}
 	data[pivot] = tmp
 	return pivot

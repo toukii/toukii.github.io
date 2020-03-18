@@ -212,20 +212,17 @@ func quick(data []int) int {
 	pivot := (low + high) &gt;&gt; 1
 	tmp := data[pivot]
 	for low &lt; high {
-		for low &lt; high &amp;&amp; data[high] &gt;= tmp {
+		for pivot &lt; high &amp;&amp; data[high] &gt;= tmp {
 			high--
 		}
 		data[pivot] = data[high]
-		if high &gt; pivot {
-			pivot = high
-		}
-		for low &lt; high &amp;&amp; data[low] &lt;= tmp {
+		pivot = high
+
+		for low &lt; pivot &amp;&amp; data[low] &lt;= tmp {
 			low++
 		}
 		data[pivot] = data[low]
-		if low &lt; pivot {
-			pivot = low
-		}
+		pivot = low
 	}
 	data[pivot] = tmp
 	return pivot
