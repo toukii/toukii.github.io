@@ -70,31 +70,27 @@ pre{
 	<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/github/github-markdown.css?v=0.1">
 <script src="http://7xku3c.com1.z0.glb.clouddn.com/static/js/jquery-1.10.2.min.js"></script>
 <script src="http://7xku3c.com1.z0.glb.clouddn.com/code/code.js?v=0.1"></script>
-<h1><a name="grpc" class="anchor" href="#grpc" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>grpc</h1>
+<h1><a name="tgrpc" class="anchor" href="#tgrpc" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>tgrpc</h1>
+<h2><a name="doc" class="anchor" href="#doc" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+doc</h2>
 
-<p><a href="protobuf-principle.html" rel="nofollow">protobuf编解码原理</a></p>
+<p>使用说明参照：<a href="https://github.com/tgrpc/doc" rel="nofollow">https://github.com/tgrpc/doc</a></p>
+<h2><a name="descriptor" class="anchor" href="#descriptor" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+descriptor</h2>
 
-<p><a href="protobuf-descriptor.html" rel="nofollow">protobuf fileDescriptor</a></p>
+<p>收集依赖fileDescriptorSet</p>
 
-<p><a href="protobuf-desc.html" rel="nofollow">protobuf descriptor收集工具 desc</a></p>
+<ol>
+<li>protoc命令</li>
+</ol>
 
-<p><a href="grpc-tgrpc.html" rel="nofollow">go调用grpc服务工具 tgrpc</a></p>
+<p>生成代码时添加flag: --descriptor_set_out=.helloworld.Greeter.pbin 会保存proto描述。</p>
 
-<p><a href="protobuf-option.html" rel="nofollow">protobuf option扩展</a></p>
-<h2><a name="go-grpc" class="anchor" href="#go-grpc" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
-go-grpc</h2>
+<ol>
+<li><a href="https://github.com/tgrpc/desc" rel="nofollow">desc工具</a></li>
+</ol>
 
-<p><a href="https://blog.csdn.net/phantom_111/article/details/74356739" rel="nofollow">go-grpc源码分析</a></p>
-
-<p><a href="grpc-proxy.html" rel="nofollow">grpc代理</a></p>
-
-<p><a href="grpc-context.html" rel="nofollow">grpc context</a></p>
-
-<p><a href="grpc-loadbalancer.html" rel="nofollow">grpc 负载均衡</a></p>
-
-<p><a href="grpc-ratelimiter.html" rel="nofollow">grpc 限流</a></p>
-
-<p><a href="grpc-circuit.html" rel="nofollow">grpc 熔断</a></p>
+<p>参考之前的文章<a href="protobuf-desc.html" rel="nofollow">protobuf-desc</a></p>
 
 
 

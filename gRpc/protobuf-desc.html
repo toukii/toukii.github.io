@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<title>toukii.github.io</title>
+<meta property="og:title" content="blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TOUKII GITHUB" />
+<meta property="og:description" content="TOUKII GITHUB" />
+<link rel="canonical" href="http://toukii.github.io/Go/base2.html" />
+<meta property="og:url" content="http://toukii.github.io/Go/base2.html" />
+<meta property="og:site_name" content="toukii.github.io" />
+<script type="application/ld+json">
+{"name":null,"description":"TOUKII GITHUB","author":null,"@type":"WebPage","url":"http://toukii.github.io/Go/base2.html","image":null,"publisher":null,"headline":"诡异:区别于其他语言","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+
+<style type="text/css">
+.col-md-8{
+  min-height: 482px;
+}
+pre{
+  background-color: #DAF9CA;
+  color: #376956;
+}
+ 
+.lineB{
+  background-color: #dbffdb;
+}
+.line{
+  float:left;
+  width:25px;
+  background-color: #DAF9BA;
+}
+.linenum{
+  color: rgba(27,31,35,0.3);
+  float: left;
+  padding-left: 3px;
+  width: 25px;
+  -moz-user-select: none;  
+  -webkit-user-select: none;  
+  -ms-user-select: none;  
+  -khtml-user-select: none;  
+  user-select: none;
+}
+#fh5co-header-section.fh5co-scrolled{
+  background: #C3C3F3;
+}
+.hiddened{top: -90px;}
+.showed{top:0;z-index: 9999;}
+</style>
+
+
+    
+    <link rel="stylesheet" href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/code.css">
+  </head>
+  <body>
+
+<div class="container">
+  <div class="row row-bottom-padded-sm">
+    <div class="col-md-8 col-md-offset-2 markdown-body">
+      
+        <h1><a href="http://toukii.github.io/">toukii.github.io</a></h1>
+      
+
+<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/code/code.css?v=0.4">
+	<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/github/github-markdown.css?v=0.1">
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/static/js/jquery-1.10.2.min.js"></script>
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/code/code.js?v=0.1"></script>
+<h1><a name="protobuf-descriptor" class="anchor" href="#protobuf-descriptor" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>protobuf descriptor</h1>
+<h2><a name="descriptor" class="anchor" href="#descriptor" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+Descriptor</h2>
+
+<p>go-grpc官方的Descriptor定义在 github.com/golang/protobuf/protoc-gen-go/descriptor/descriptor.pb.go中。
+已第三方gogo为例，代码见：<a href="https://github.com/gogo/protobuf/blob/master/protoc-gen-gogo/descriptor/descriptor.pb.go" rel="nofollow">https://github.com/gogo/protobuf/blob/master/protoc-gen-gogo/descriptor/descriptor.pb.go</a></p>
+
+<p>Descriptor有以下一些类型，从它的名称可以看出是描述什么的，也可以参考之前的文章<a href="prodobuf-descriptor.html" rel="nofollow">prodobuf-descriptor</a>：</p>
+
+<pre><code>FileDescriptorProto 文件描述
+ServiceDescriptorProto 服务描述
+MethodDescriptorProto 方法描述
+DescriptorProto message描述
+FieldDescriptorProto 字段描述
+OneofDescriptorProto
+EnumDescriptorProto
+EnumValueDescriptorProto
+</code></pre>
+
+<p>Descriptor的关系：</p>
+
+<pre><code>type FileDescriptorProto struct {
+	MessageType []*DescriptorProto
+	EnumType    []*EnumDescriptorProto
+	Service     []*ServiceDescriptorProto
+	Extension   []*FieldDescriptorProto
+	Options     *FileOptions
+}
+
+type ServiceDescriptorProto struct {
+	Method               []*MethodDescriptorProto
+	Options              *ServiceOptions
+}
+
+type MethodDescriptorProto struct {
+	Options    *MethodOptions
+}
+</code></pre>
+
+<p>FileDescriptorProto包含了若干ServiceDescriptorProto，ServiceDescriptorProto又包含了若干MethodDescriptorProto。message的定义放在FileDescriptorProto中。
+几个Options是扩展用的，参考<a href="protobuf-option.html" rel="nofollow">protobuf-option</a>。
+FieldDescriptorProto可能依赖其他FileDescriptorProto的FieldDescriptorProto，如果要得到完整的Descriptor，需要收集依赖的FieldDescriptorProto, 即 其他proto的FileDescriptorProto, 最终得到一个FileDescriptorSet：</p>
+
+<pre><code>type FileDescriptorSet struct {
+	File                 []*FileDescriptorProto
+}
+</code></pre>
+<h2><a name="filedescriptor" class="anchor" href="#filedescriptor" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+fileDescriptor</h2>
+
+<p>生成grpc代码后，在pb.go文件中可以拿到 FileDescriptorProto，这个FileDescriptorProto只描述了当前proto文件的Descriptor。</p>
+
+<pre><code>var fileDescriptorCharts = []byte{
+	// 140 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x49, 0xce, 0x48, 0x2c,
+	0x2a, 0x29, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0xe2, 0x28, 0x4e, 0xcc, 0x4b, 0xcc, 0xa9,
+	0x2c, 0x4e, 0x95, 0xe2, 0x49, 0xce, 0xcf, 0xcd, 0xcd, 0xcf, 0x83, 0x88, 0x2b, 0xa9, 0x72, 0x71,
+	0xba, 0xe5, 0x24, 0x16, 0xa5, 0x06, 0xa5, 0x16, 0x17, 0x08, 0x49, 0x70, 0xb1, 0x27, 0xe7, 0xe7,
+	0x95, 0xa4, 0xe6, 0x95, 0x48, 0x30, 0x2a, 0x30, 0x6a, 0x70, 0x06, 0xc1, 0xb8, 0x46, 0xae, 0x5c,
+	0x6c, 0xce, 0x60, 0xe3, 0x84, 0xac, 0xb9, 0x58, 0xc1, 0x1a, 0x84, 0xa4, 0xf5, 0x60, 0x46, 0xea,
+	0xb9, 0xa5, 0x26, 0x96, 0x94, 0x16, 0xa5, 0x7a, 0xe6, 0x16, 0xe4, 0x17, 0x95, 0x24, 0xe6, 0x25,
+	0xa7, 0x4a, 0x09, 0x23, 0x49, 0xc2, 0x8c, 0x57, 0x62, 0x48, 0x62, 0x03, 0x5b, 0x6a, 0x0c, 0x08,
+	0x00, 0x00, 0xff, 0xff, 0xa2, 0xaa, 0x43, 0x07, 0x9c, 0x00, 0x00, 0x00,
+}
+</code></pre>
+
+<p>在decode set时（<code>grpcurl.DescriptorSourceFromFileDescriptorSet(p.fileDescriptorSet)</code>），可能会因为缺少依赖报错，如：no descriptor found for &#34;common.proto&#34;，这需要将缺少的依赖加进来。最终可以得到完整的FileDescriptorSet。</p>
+<h2><a name="desc" class="anchor" href="#desc" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+desc</h2>
+
+<pre><code>desc -m helloworld.Greeter/SayHello helloworld extension google.protobuf
+</code></pre>
+
+<p>收集<code>helloworld.Greeter/SayHello</code>的依赖, 收集成功后，可以收集一份完整的helloworld.Greeter fileDescriptorSet。
+收集目录：helloworld extension google.protobuf</p>
+
+<p>日志如下：</p>
+
+<pre><code>imports: [helloworld extension google.protobuf]
+INFO[0000] collect 3 pb.go
+extension/extension.pb.go
+helloworld/lang.pb.go
+helloworld/greeter.pb.go
+DEBU[0000] search helloworld.Greeter/SayHello, pkg: helloworld, service: helloworld.Greeter
+DEBU[0000] searching helloworld/greeter.pb.go
+INFO[0000] helloworld.Greeter/SayHello --&gt; /Users/toukii/PATH/GOPATH/ezbuy/goflow/src/github.com/tgrpc/ngrpc/helloworld/greeter.pb.go
+DEBU[0000] no descriptor found for &#34;extension/extension.proto&#34; ==&gt; extension/extension.proto extension/extension.pb.go
+DEBU[0000] searching extension/extension.pb.go
+INFO[0000] extension/extension.proto --&gt; /Users/toukii/PATH/GOPATH/ezbuy/goflow/src/github.com/tgrpc/ngrpc/extension/extension.pb.go
+DEBU[0000] searching extension/extension.pb.go
+INFO[0000] extension/extension.proto --&gt; /Users/toukii/PATH/GOPATH/ezbuy/goflow/src/github.com/tgrpc/ngrpc/extension/github.com/tgrpc/ngrpc/extension/extension.pb.go
+WARN[0000] extension/extension.pb.go is duplicated
+DEBU[0000] no descriptor found for &#34;google.protobuf/descriptor.proto&#34; ==&gt; google.protobuf/descriptor.proto google.protobuf/descriptor.pb.go
+extension/extension.pb.go google.protobuf/descriptor.pb.go
+helloworld/lang.pb.go google.protobuf/descriptor.pb.go
+helloworld/greeter.pb.go google.protobuf/descriptor.pb.go
+WARN[0000] not found pb for:helloworld.Greeter/SayHello
+data writing ==&gt; helloworld.Greeter.desc
+</code></pre>
+
+
+
+      
+    </div>
+  </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn@v0.02/js/toukii/jquery-1.10.2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn/js/code.js"></script>
+    
+  </body>
+</html>
+
