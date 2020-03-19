@@ -28,3 +28,5 @@
 [排序算法总结](base-sort.html)
 
 [排序算法代码](base-sortcode.html)
+
+[二分查找总结](base-binarysearch.html)
