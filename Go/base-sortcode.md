@@ -111,7 +111,7 @@ func SortQuick(data []int) {
 	SortQuick(data[pivot+1:])
 }
 
-// 取data[low]未pivot
+// 取data[low]为pivot
 func quick(data []int) int {
 	size := len(data)
 	low, high := 0, size-1
@@ -163,7 +163,7 @@ func quickv2(data []int) int {
 }
 ```
 
-### 傻瓜式快排
+### 傻瓜快排
 
 ```
 func QuickSortv3(data []int) int {

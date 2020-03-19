@@ -178,7 +178,7 @@ func compare(i, j int) bool {
 	SortQuick(data[pivot+1:])
 }
 
-// 取data[low]未pivot
+// 取data[low]为pivot
 func quick(data []int) int {
 	size := len(data)
 	low, high := 0, size-1
@@ -228,8 +228,8 @@ func quick(data []int) int {
 	return pivot
 }
 </code></pre>
-<h3><a name="傻瓜式快排" class="anchor" href="#%E5%82%BB%E7%93%9C%E5%BC%8F%E5%BF%AB%E6%8E%92" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
-傻瓜式快排</h3>
+<h3><a name="傻瓜快排" class="anchor" href="#%E5%82%BB%E7%93%9C%E5%BF%AB%E6%8E%92" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+傻瓜快排</h3>
 
 <pre><code>func QuickSortv3(data []int) int {
 	size := len(data)
@@ -284,5 +284,8 @@ func quick(data []int) int {
     <script src="https://cdn.jsdelivr.net/gh/everfore/cdn/js/code.js"></script>
     
   </body>
+</html>
+
+body>
 </html>
 
