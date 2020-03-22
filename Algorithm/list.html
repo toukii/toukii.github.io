@@ -1,0 +1,220 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<title>toukii.github.io</title>
+<meta property="og:title" content="blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TOUKII GITHUB" />
+<meta property="og:description" content="TOUKII GITHUB" />
+<link rel="canonical" href="http://toukii.github.io/Go/base2.html" />
+<meta property="og:url" content="http://toukii.github.io/Go/base2.html" />
+<meta property="og:site_name" content="toukii.github.io" />
+<script type="application/ld+json">
+{"name":null,"description":"TOUKII GITHUB","author":null,"@type":"WebPage","url":"http://toukii.github.io/Go/base2.html","image":null,"publisher":null,"headline":"诡异:区别于其他语言","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+
+<style type="text/css">
+.col-md-8{
+  min-height: 482px;
+}
+pre{
+  background-color: #DAF9CA;
+  color: #376956;
+}
+ 
+.lineB{
+  background-color: #dbffdb;
+}
+.line{
+  float:left;
+  width:25px;
+  background-color: #DAF9BA;
+}
+.linenum{
+  color: rgba(27,31,35,0.3);
+  float: left;
+  padding-left: 3px;
+  width: 25px;
+  -moz-user-select: none;  
+  -webkit-user-select: none;  
+  -ms-user-select: none;  
+  -khtml-user-select: none;  
+  user-select: none;
+}
+#fh5co-header-section.fh5co-scrolled{
+  background: #C3C3F3;
+}
+.hiddened{top: -90px;}
+.showed{top:0;z-index: 9999;}
+</style>
+
+
+    
+    <link rel="stylesheet" href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/code.css">
+  </head>
+  <body>
+
+<div class="container">
+  <div class="row row-bottom-padded-sm">
+    <div class="col-md-8 col-md-offset-2 markdown-body">
+      
+        <h1><a href="http://toukii.github.io/">toukii.github.io</a></h1>
+      
+
+<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/code/code.css?v=0.4">
+	<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/github/github-markdown.css?v=0.1">
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/static/js/jquery-1.10.2.min.js"></script>
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/code/code.js?v=0.1"></script>
+<h1><a name="链表" class="anchor" href="#%E9%93%BE%E8%A1%A8" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>链表</h1>
+
+<p>链表节点定义</p>
+
+<pre><code>type Node struct {
+	K    string
+	V    int
+	next *Node
+}
+
+func (n *Node) String() string {
+	return fmt.Sprintf(&#34;[%s-%v] .. &#34;, n.K, n.V)
+}
+
+func (n *Node) Discply() {
+	node := n
+	for node != nil {
+		fmt.Print(node)
+		node = node.next
+	}
+	fmt.Println()
+}
+</code></pre>
+<h2><a name="链表反转" class="anchor" href="#%E9%93%BE%E8%A1%A8%E5%8F%8D%E8%BD%AC" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+链表反转</h2>
+
+<p>普通反转递归实现：</p>
+
+<pre><code>func ReverseV1(root *Node) *Node {
+	if root.next == nil {
+		return root
+	}
+	// node -&gt; node(next) -&gt;...-&gt; tail
+	// node &lt;- node(next) &lt;-...&lt;- tail
+	next := root.next
+	root.next = nil
+	tail := ReverseV1(next)
+	next.next = root
+
+	return tail
+}
+</code></pre>
+
+<p>普通反转非递归实现：</p>
+
+<pre><code>
+func Reverse(root *Node) *Node {
+	if root == nil || root.next == nil {
+		return root
+	}
+	// node -&gt; node(next) -&gt;...-&gt; tail
+	// node &lt;- node(next) &lt;-...&lt;- tail
+	head := root
+	next := root.next
+	root.next = nil
+
+	for next != nil {
+		head.Discply()
+
+		next.next = head
+
+		head = next
+		next = nn
+	}
+
+	return head
+}
+</code></pre>
+
+<p>每n个节点反转一次，不足n个不反转，递归实现：</p>
+
+<pre><code>func LeastLen(root *Node, least int) bool {
+	n := root
+	for n != nil {
+		n = n.next
+		least--
+		if least &lt;= 0 {
+			return true
+		}
+	}
+	return false
+}
+
+func ReverseN(cur, head *Node, n, idx int) *Node {
+	if cur == head &amp;&amp; !LeastLen(cur, n) {
+		return head
+	}
+	if cur.next == nil {
+		return cur
+	}
+	if idx%n != 0 { // 正常的翻转
+		// node -&gt; node(next) -&gt;...-&gt; tail
+		// node &lt;- node(next) &lt;-...&lt;- tail
+		next := cur.next
+		cur.next = nil
+		tail := ReverseN(next, head, n, idx+1)
+		next.next = cur
+		return tail
+	}
+	// 需要翻转
+	// node -&gt; node(next) -&gt;...-&gt; tail
+	// node -&gt; tail -&gt;...-&gt; node(next)
+	next := cur.next
+	tail := ReverseN(next, next, n, idx+1)
+	head.next = tail // 当前链表翻转后的head指向下一个翻转的新头（tail）
+
+	tail.Discply()
+	return cur
+}
+</code></pre>
+
+<pre><code>[1-1] .. [2-2] .. [3-3] .. [4-4] .. [5-5] .. [6-6] .. [7-7] .. [8-8] ..
+[7-7] .. [8-8] ..
+[6-6] .. [5-5] .. [4-4] .. [7-7] .. [8-8] ..
+[3-3] .. [2-2] .. [1-1] .. [6-6] .. [5-5] .. [4-4] .. [7-7] .. [8-8] ..
+</code></pre>
+
+<p>从末尾开始每3个翻转，不足的不翻转</p>
+
+<pre><code>l := Len(root)
+offset := l % 3
+r := root.next
+pr := root
+for i := 0; i &lt; offset-1; i++ {
+	r = r.next
+	pr = pr.next
+}
+rn := ReverseN(r, r, 3, 1)
+pr.next = rn
+root.Discply()
+</code></pre>
+
+<pre><code>[1-1] .. [2-2] .. [5-5] .. [4-4] .. [3-3] .. [8-8] .. [7-7] .. [6-6] ..
+</code></pre>
+
+
+
+      
+    </div>
+  </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn@v0.02/js/toukii/jquery-1.10.2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn/js/code.js"></script>
+    
+  </body>
+</html>
+
