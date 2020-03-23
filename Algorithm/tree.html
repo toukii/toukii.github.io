@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<title>toukii.github.io</title>
+<meta property="og:title" content="blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="TOUKII GITHUB" />
+<meta property="og:description" content="TOUKII GITHUB" />
+<link rel="canonical" href="http://toukii.github.io/Go/base2.html" />
+<meta property="og:url" content="http://toukii.github.io/Go/base2.html" />
+<meta property="og:site_name" content="toukii.github.io" />
+<script type="application/ld+json">
+{"name":null,"description":"TOUKII GITHUB","author":null,"@type":"WebPage","url":"http://toukii.github.io/Go/base2.html","image":null,"publisher":null,"headline":"诡异:区别于其他语言","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
+
+<style type="text/css">
+.col-md-8{
+  min-height: 482px;
+}
+pre{
+  background-color: #DAF9CA;
+  color: #376956;
+}
+ 
+.lineB{
+  background-color: #dbffdb;
+}
+.line{
+  float:left;
+  width:25px;
+  background-color: #DAF9BA;
+}
+.linenum{
+  color: rgba(27,31,35,0.3);
+  float: left;
+  padding-left: 3px;
+  width: 25px;
+  -moz-user-select: none;  
+  -webkit-user-select: none;  
+  -ms-user-select: none;  
+  -khtml-user-select: none;  
+  user-select: none;
+}
+#fh5co-header-section.fh5co-scrolled{
+  background: #C3C3F3;
+}
+.hiddened{top: -90px;}
+.showed{top:0;z-index: 9999;}
+</style>
+
+
+    
+    <link rel="stylesheet" href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/everfore/cdn/css/code.css">
+  </head>
+  <body>
+
+<div class="container">
+  <div class="row row-bottom-padded-sm">
+    <div class="col-md-8 col-md-offset-2 markdown-body">
+      
+        <h1><a href="http://toukii.github.io/">toukii.github.io</a></h1>
+      
+
+<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/code/code.css?v=0.4">
+	<link rel="stylesheet" href="http://7xku3c.com1.z0.glb.clouddn.com/github/github-markdown.css?v=0.1">
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/static/js/jquery-1.10.2.min.js"></script>
+<script src="http://7xku3c.com1.z0.glb.clouddn.com/code/code.js?v=0.1"></script>
+<h1><a name="树" class="anchor" href="#%E6%A0%91" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>树</h1>
+<h2><a name="b-树-转载" class="anchor" href="#b-%E6%A0%91-%E8%BD%AC%E8%BD%BD" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+B- 树 <a href="https://blog.csdn.net/xdzhouxin/article/details/80015424" rel="nofollow">转载</a></h2>
+
+<p>B-树其实就是B树，B树是一种多路平衡搜索树</p>
+
+<p>B树与二叉搜索树的最大区别在于其每个节点可以存不止一个键值，并且其子女不止两个，不过还是需要满足键值数=子女数-1。因此，对于相同数量的键值，B树比二叉搜索树要更加矮一些，特别是当M较大时，树高会更低。</p>
+
+<p><img src="https://img-blog.csdn.net/20180805150556313?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3hkemhvdXhpbg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt=""></p>
+<h3><a name="b-树的插入" class="anchor" href="#b-%E6%A0%91%E7%9A%84%E6%8F%92%E5%85%A5" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+B-树的插入</h3>
+
+<p>B树的插入首先查找插入所在的节点，若该节点未满，插入即可，若该节点以及满了，则需要将该节点分裂，并将该节点的中间的元素移动到父节点上，若父节点未满，则结束，若父节点也满了，则需要继续分裂父节点，如此不断向上，直到根节点，如果根节点也满了，则分裂根节点，从而树的高度+1。</p>
+<h3><a name="b-树的删除" class="anchor" href="#b-%E6%A0%91%E7%9A%84%E5%88%A0%E9%99%A4" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+B-树的删除</h3>
+
+<p>B树的删除首先要找到删除的节点，并删除节点中的元素，如果删除的元素有左右孩子，则上移左孩子最右节点或右孩子最左节点到父节点，若没有左右孩子，则直接删除。删除后，若某节点中元素数目不符合B树要求（小于M/2-1取上整），则需要看起相邻的兄弟节点是否有多余的元素，若有，则可以向父节点借一个元素，然后将最丰满的相邻兄弟结点中上移最后或最前一个元素到父节点中（有点类似于左旋）。若其相邻兄弟节点没有多余的元素，则与其兄弟节点合并成一个节点，此时也需要将父节点中的一个元素一起合并。</p>
+<h2><a name="b-树" class="anchor" href="#b-%E6%A0%91" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+B+树</h2>
+
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/to5t8icQhBHqk1hLPiafKCRFsqBRsZ5k0WY9YwSWtdXLdiatdibSk27BSUmSLQB459cXPB8x93EHEgGxcCCdaGDmzw/640?wx_fmt=png&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt=""></p>
+
+<p><img src="https://img-blog.csdn.net/20180805150951880?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3hkemhvdXhpbg==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt=""></p>
+<h3><a name="b-树的插入" class="anchor" href="#b-%E6%A0%91%E7%9A%84%E6%8F%92%E5%85%A5" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+B+树的插入</h3>
+
+<p>B+树的插入与B树类似，如果节点中有多余的空间放入元素，则直接插入即可。如果节点本来就已经满了，则将其分裂为两个节点，并将其中间元素的索引放入到父节点中，在这里如果是叶子节点的话，是拷贝中间元素的索引到父节点中（因为叶子节点需要包含所有的元素），而如果是非叶子节点，则是上移节点的中间元素到父节点中。</p>
+<h3><a name="b-树的删除" class="anchor" href="#b-%E6%A0%91%E7%9A%84%E5%88%A0%E9%99%A4" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+B+树的删除</h3>
+
+<p>在叶节点中删除元素，如果节点还满足B+树的要求，则okay。如果元素个数过少，并且其邻近兄弟节点有多余的元素，则从邻近兄弟节点中借一个元素，并修改父节点中的索引使其满足新的划分。如果其邻近兄弟节点也没有多余的元素，则将其和邻近兄弟节点合并，并且我们需要修改其父节点的索引以满足新的划分。并且如果父节点的索引元素太少不满足要求，则需要继续看起兄弟节点是否多余，如果没有多余则还需要与兄弟节点合并，如此不断向上，直到根节点。如果根节点中元素也被删除，则把根节点删除，并由合并来的节点作为新的根节点，树的高度减1</p>
+<h3><a name="b-树和b-树的区别" class="anchor" href="#b-%E6%A0%91%E5%92%8Cb-%E6%A0%91%E7%9A%84%E5%8C%BA%E5%88%AB" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+B-树和B+树的区别</h3>
+
+<p>B+树的非叶子节点并没有指向关键字具体信息的指针，因此其内部节点相对B树更小，如果把所有同一内部节点的关键字存放在同一盘块中，盘块所能容纳的关键字数量也越多，具有更好的空间局部性，一次性读入内存的需要查找的关键字也越多，相对的IO读写次数也就降低了。</p>
+
+<p>另外对于B+树来说，因为非叶子节点只是叶子节点中关键字的索引，所以任何关键字的查找都必须走一条从根节点到叶子节点的路，所有关键字查询的路径长度相同。而若经常访问的元素离根节点很近，则B树访问更迅速，因为其不一定要到叶子节点。</p>
+
+<p>数据库索引采用B+树的主要原因是B树在提高了IO性能的同时并没有解决元素遍历效率低下的问题，而也正是为了解决该问题，B+树应运而生。因为叶子节点中增加了一个链指针，B+树只需要取遍历叶子节点可以实现整棵树的遍历。而且数据库中基于范围的查询是非常频繁的，B树对基于范围的查询效率太低。</p>
+<h2><a name="红黑树-参考" class="anchor" href="#%E7%BA%A2%E9%BB%91%E6%A0%91-%E5%8F%82%E8%80%83" rel="nofollow" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+红黑树 <a href="https://www.jianshu.com/p/e136ec79235c" rel="nofollow">参考</a></h2>
+
+<p><img src="https://upload-images.jianshu.io/upload_images/2392382-4996bbfb4017a3b2.png?imageMogr2/auto-orient/strip|imageView2/2/w/526/format/webp" alt=""></p>
+
+
+
+      
+    </div>
+  </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn@v0.02/js/toukii/jquery-1.10.2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/everfore/cdn/js/code.js"></script>
+    
+  </body>
+</html>
+
